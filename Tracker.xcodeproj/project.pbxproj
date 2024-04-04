@@ -12,6 +12,8 @@
 		1B91DFA22BBE821F009ADD8E /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1B91DFA12BBE821F009ADD8E /* ViewController.swift */; };
 		1B91DFA72BBE8220009ADD8E /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 1B91DFA62BBE8220009ADD8E /* Assets.xcassets */; };
 		1B91DFAA2BBE8220009ADD8E /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 1B91DFA82BBE8220009ADD8E /* LaunchScreen.storyboard */; };
+		1B91DFB42BBE935A009ADD8E /* UIColor+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1B91DFB32BBE935A009ADD8E /* UIColor+Extension.swift */; };
+		1B91DFB62BBE94BB009ADD8E /* AppColors.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1B91DFB52BBE94BB009ADD8E /* AppColors.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -22,6 +24,8 @@
 		1B91DFA62BBE8220009ADD8E /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		1B91DFA92BBE8220009ADD8E /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		1B91DFAB2BBE8220009ADD8E /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		1B91DFB32BBE935A009ADD8E /* UIColor+Extension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIColor+Extension.swift"; sourceTree = "<group>"; };
+		1B91DFB52BBE94BB009ADD8E /* AppColors.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppColors.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -54,6 +58,7 @@
 		1B91DF9C2BBE821F009ADD8E /* Tracker */ = {
 			isa = PBXGroup;
 			children = (
+				1B91DFB12BBE9330009ADD8E /* Resources */,
 				1B91DF9D2BBE821F009ADD8E /* AppDelegate.swift */,
 				1B91DF9F2BBE821F009ADD8E /* SceneDelegate.swift */,
 				1B91DFA12BBE821F009ADD8E /* ViewController.swift */,
@@ -62,6 +67,23 @@
 				1B91DFAB2BBE8220009ADD8E /* Info.plist */,
 			);
 			path = Tracker;
+			sourceTree = "<group>";
+		};
+		1B91DFB12BBE9330009ADD8E /* Resources */ = {
+			isa = PBXGroup;
+			children = (
+				1B91DFB22BBE9348009ADD8E /* Extensions */,
+				1B91DFB52BBE94BB009ADD8E /* AppColors.swift */,
+			);
+			path = Resources;
+			sourceTree = "<group>";
+		};
+		1B91DFB22BBE9348009ADD8E /* Extensions */ = {
+			isa = PBXGroup;
+			children = (
+				1B91DFB32BBE935A009ADD8E /* UIColor+Extension.swift */,
+			);
+			path = Extensions;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -137,6 +159,8 @@
 				1B91DFA22BBE821F009ADD8E /* ViewController.swift in Sources */,
 				1B91DF9E2BBE821F009ADD8E /* AppDelegate.swift in Sources */,
 				1B91DFA02BBE821F009ADD8E /* SceneDelegate.swift in Sources */,
+				1B91DFB62BBE94BB009ADD8E /* AppColors.swift in Sources */,
+				1B91DFB42BBE935A009ADD8E /* UIColor+Extension.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
