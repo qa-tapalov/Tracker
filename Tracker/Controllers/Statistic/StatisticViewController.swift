@@ -16,6 +16,7 @@ final class StatisticViewController: UIViewController {
     
     private func setupView(){
         view.backgroundColor = AppColors.whiteDay
+        navigationController?.navigationBar.prefersLargeTitles = true
         title = "Статистика"
     }
 
