@@ -6,7 +6,7 @@
 //
 import UIKit
 
-class EmojiCollectionTableViewCell: UITableViewCell {
+final class EmojiCollectionTableViewCell: UITableViewCell {
     
     static let identifire = "EmojiCollectionTableViewCell"
     weak var delegate: CellSelectedDelegate?
@@ -80,7 +80,7 @@ extension EmojiCollectionTableViewCell: UICollectionViewDelegateFlowLayout, UICo
     }
 }
 
-class EmogiCollectionViewCell: UICollectionViewCell {
+final class EmogiCollectionViewCell: UICollectionViewCell {
     let titleLabel = UILabel()
     static let identifier = "EmogiCollectionViewCell"
     

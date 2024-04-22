@@ -7,7 +7,7 @@
 
 import UIKit
 
-class ColorsCollectionTableViewCell: UITableViewCell {
+final class ColorsCollectionTableViewCell: UITableViewCell {
     
     static let identifire = "ColorsCollectionTableViewCell"
     weak var delegate: CellSelectedDelegate?
@@ -77,7 +77,7 @@ extension ColorsCollectionTableViewCell: UICollectionViewDelegateFlowLayout, UIC
     }
 }
 
-class ColorCollectionViewCell: UICollectionViewCell {
+final class ColorCollectionViewCell: UICollectionViewCell {
     let viewColor = UIView()
     static let identifier = "ColorCollectionViewCell"
     
