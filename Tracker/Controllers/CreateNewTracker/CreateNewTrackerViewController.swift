@@ -7,12 +7,66 @@
 
 import UIKit
 
+enum Section {
+    case textField
+    case detail
+    case emogi
+    case colors
+    
+    var heightForSection: CGFloat {
+        switch self {
+        case .textField, .detail: 75
+        case .emogi, .colors: 204
+        }
+    }
+    
+    var nameForSection: String? {
+        switch self {
+        case .textField, .detail:
+            return nil
+        case .emogi:
+            return "Emoji"
+        case .colors:
+            return "Цвет"
+        }
+    }
+}
+
 final class CreateNewTrackerViewController: UIViewController {
     
     weak var delegate: CellCountDelegate?
     weak var delegateAddTracker: AddTrackerDelegate?
     
-    private let tableView = UITableView(frame: .zero, style: .insetGrouped)
+    private let nameOptionCell = ["Категория","Расписание"]
+    private var typeTracker: String?
+    private var selectedDay = [WeekDay]() {
+        didSet {
+            updateDoneButtonState()
+        }
+    }
+    
+    private let viewModel: [Section] = [
+        .textField,
+        .detail,
+        .emogi,
+        .colors
+    ]
+    
+    private lazy var tableView: UITableView = {
+        let view = UITableView(frame: .zero, style: .insetGrouped)
+        view.translatesAutoresizingMaskIntoConstraints = false
+        view.dataSource = self
+        view.delegate = self
+        view.backgroundColor = AppColors.whiteDay
+        view.separatorColor = AppColors.gray
+        view.contentInset = UIEdgeInsets(top: 0, left: 0, bottom: 0, right: 0)
+        view.keyboardDismissMode = .onDrag
+        view.register(TextFieldTableViewCell.self, forCellReuseIdentifier: TextFieldTableViewCell.textFieldIdentifier)
+        view.register(OptionTableViewCell.self, forCellReuseIdentifier: OptionTableViewCell.optionCellIdentfier)
+        view.register(EmojiCollectionTableViewCell.self, forCellReuseIdentifier: EmojiCollectionTableViewCell.identifire)
+        view.register(ColorsCollectionTableViewCell.self, forCellReuseIdentifier: ColorsCollectionTableViewCell.identifire)
+        return view
+    }()
     
     private lazy var stack: UIStackView = {
         let view = UIStackView()
@@ -53,46 +107,6 @@ final class CreateNewTrackerViewController: UIViewController {
         return view
     }()
     
-    enum Section {
-        case textField
-        case detail
-        case emogi
-        case colors
-        
-        var heightForSection: CGFloat {
-            switch self {
-            case .textField, .detail: 75
-            case .emogi, .colors: 204
-            }
-        }
-        
-        var nameForSection: String? {
-            switch self {
-            case .textField, .detail:
-                return nil
-            case .emogi:
-                return "Emoji"
-            case .colors:
-                return "Цвет"
-            }
-        }
-    }
-    
-    private let nameOptionCell = ["Категория","Расписание"]
-    var typeTracker: String?
-    var selectedDay = [WeekDay]() {
-        didSet {
-            updateDoneButtonState()
-        }
-    }
-    
-    private let viewModel: [Section] = [
-        .textField,
-        .detail,
-        .emogi,
-        .colors
-    ]
-    
     override func viewDidLoad() {
         super.viewDidLoad()
         view.backgroundColor = AppColors.whiteDay
@@ -105,18 +119,6 @@ final class CreateNewTrackerViewController: UIViewController {
     
     private func setupTableView(){
         view.addSubview(tableView)
-        tableView.translatesAutoresizingMaskIntoConstraints = false
-        tableView.dataSource = self
-        tableView.delegate = self
-        tableView.backgroundColor = AppColors.whiteDay
-        tableView.separatorColor = AppColors.gray
-        tableView.contentInset = UIEdgeInsets(top: 0, left: 0, bottom: 0, right: 0)
-        tableView.keyboardDismissMode = .onDrag
-        tableView.register(TextFieldTableViewCell.self, forCellReuseIdentifier: TextFieldTableViewCell.textFieldIdentifier)
-        tableView.register(OptionTableViewCell.self, forCellReuseIdentifier: OptionTableViewCell.optionCellIdentfier)
-        tableView.register(EmojiCollectionTableViewCell.self, forCellReuseIdentifier: EmojiCollectionTableViewCell.identifire)
-        tableView.register(ColorsCollectionTableViewCell.self, forCellReuseIdentifier: ColorsCollectionTableViewCell.identifire)
-        
         NSLayoutConstraint.activate([
             tableView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 0),
             tableView.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: 0),
@@ -173,8 +175,8 @@ final class CreateNewTrackerViewController: UIViewController {
     }
     
     @objc func textFieldChanged() {
-        let cell = tableView.cellForRow(at: IndexPath(row: 0, section: 0)) as! TextFieldTableViewCell
-        guard let text = cell.textField.text else {return}
+        let cell = tableView.cellForRow(at: IndexPath(row: 0, section: 0)) as? TextFieldTableViewCell
+        guard let text = cell?.textField.text else {return}
         if text.count >= 1 {
             updateDoneButtonState()
         }}
@@ -312,10 +314,10 @@ extension CreateNewTrackerViewController: UITableViewDataSource, UITableViewDele
     }
     
     func tableView(_ tableView: UITableView, willDisplayHeaderView view: UIView, forSection section: Int) {
-        let header = view as! UITableViewHeaderFooterView
-        header.textLabel?.font = UIFont.systemFont(ofSize: 19, weight: .bold)
-        header.textLabel?.textColor = AppColors.blackDay
-        header.textLabel?.text = header.textLabel?.text?.capitalizeFirstLetter()
+        let header = view as? UITableViewHeaderFooterView
+        header?.textLabel?.font = UIFont.systemFont(ofSize: 19, weight: .bold)
+        header?.textLabel?.textColor = AppColors.blackDay
+        header?.textLabel?.text = header?.textLabel?.text?.capitalizeFirstLetter()
     }
 }
 
@@ -344,21 +346,20 @@ extension CreateNewTrackerViewController: CellCountDelegate, CellSelectedDelegat
     
     func updateDoneButtonState() {
         let isTextFieldFilled = (tableView.cellForRow(at: IndexPath(row: 0, section: 0)) as? TextFieldTableViewCell)?.textField.text?.isEmpty == false
-        
         let cellEmoji = tableView.cellForRow(at: IndexPath(row: 0, section: 2)) as? EmojiCollectionTableViewCell
         let cellColors = tableView.cellForRow(at: IndexPath(row: 0, section: 3)) as? ColorsCollectionTableViewCell
         
         let isEmojiSelected = cellEmoji?.selectedEmoji != nil
         let isColorSelected = cellColors?.selectedColor != nil
         var isScheduleSelected: Bool = false
-        if typeTracker == nil {
-            isScheduleSelected = !selectedDay.isEmpty
-        } else {
-            isScheduleSelected = true
-        }
+        typeTracker == nil ? (isScheduleSelected = !selectedDay.isEmpty) : (isScheduleSelected = true)
+        
         if isTextFieldFilled && isEmojiSelected && isColorSelected && isScheduleSelected{
             buttonCreate.backgroundColor = AppColors.blackDay
             buttonCreate.isEnabled = true
+        } else {
+            buttonCreate.backgroundColor = AppColors.gray
+            buttonCreate.isEnabled = false
         }
     }
     

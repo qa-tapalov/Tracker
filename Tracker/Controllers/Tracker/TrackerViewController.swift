@@ -13,6 +13,10 @@ protocol AddTrackerDelegate: AnyObject {
 
 final class TrackerViewController: UIViewController {
     
+    var filteredCategories: [TrackerCategory] = []
+    var categories: [TrackerCategory] = []
+    var completedTrackers: [TrackerRecord] = []
+    
     private lazy var labelEmptyList: UILabel = {
         let view = UILabel()
         view.text = "Что будем отслеживать?"
@@ -44,9 +48,14 @@ final class TrackerViewController: UIViewController {
         return collectionView
     }()
     
-    var filteredCategories: [TrackerCategory] = []
-    var categories: [TrackerCategory] = []
-    var completedTrackers: [TrackerRecord] = []
+    private lazy var searchTextField: UISearchTextField = {
+        let view = UISearchTextField()
+        view.placeholder = "Поиск"
+        view.font = UIFont.systemFont(ofSize: 17, weight: .medium)
+        view.translatesAutoresizingMaskIntoConstraints = false
+        view.delegate = self
+        return view
+    }()
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -72,9 +81,11 @@ final class TrackerViewController: UIViewController {
         view.addSubview(stubImage)
         view.addSubview(labelEmptyList)
         view.addSubview(collectionView)
+        view.addSubview(searchTextField)
         setupCollection()
         setupConstraitsStubImage()
         setupConstraitsLabelEmptyList()
+        setupConstraitsSearchBar()
         collectionView.register(TrackerViewCollectionCell.self, forCellWithReuseIdentifier: TrackerViewCollectionCell.reuseIdentifier)
         collectionView.register(SupplementaryView.self, forSupplementaryViewOfKind: UICollectionView.elementKindSectionHeader, withReuseIdentifier: SupplementaryView.supplementaryIdentifier)
     }
@@ -85,7 +96,7 @@ final class TrackerViewController: UIViewController {
         collectionView.allowsMultipleSelection = false
         collectionView.translatesAutoresizingMaskIntoConstraints = false
         NSLayoutConstraint.activate([
-            collectionView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor),
+            collectionView.topAnchor.constraint(equalTo: searchTextField.bottomAnchor, constant: 24),
             collectionView.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor),
             collectionView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
             collectionView.trailingAnchor.constraint(equalTo: view.trailingAnchor)
@@ -108,6 +119,15 @@ final class TrackerViewController: UIViewController {
         ])
     }
     
+    private func setupConstraitsSearchBar(){
+        NSLayoutConstraint.activate([
+            searchTextField.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor),
+            searchTextField.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16),
+            searchTextField.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -16),
+            searchTextField.heightAnchor.constraint(equalToConstant: 36)
+        ])
+    }
+    
     @objc private func dateValueChanged(){
         filterTrackers()
         collectionView.reloadData()
@@ -123,12 +143,17 @@ final class TrackerViewController: UIViewController {
     private func filterTrackers(){
         let selectedDate = datePicker.date
         let filterWeekday = Calendar.current.component(.weekday, from: selectedDate)
+        let filterText = searchTextField.text?.lowercased() ?? ""
         filteredCategories = categories.compactMap { category in
             let trackers = category.trackers.filter { tracker in
-                tracker.shedule.contains { weekDay in
+                let textCondition = filterText.isEmpty ||
+                tracker.name.lowercased().contains(filterText)
+                
+                let dateCondition = tracker.shedule.contains { weekDay in
                     weekDay.rawValue == filterWeekday
-                    
                 } || tracker.shedule.isEmpty
+                
+                return textCondition && dateCondition
             }
             
             if trackers.isEmpty {
@@ -271,4 +296,15 @@ extension TrackerViewController: AddTrackerDelegate {
         dateValueChanged()
         collectionView.reloadData()
     }
+}
+
+extension TrackerViewController: UITextFieldDelegate {
+    
+    func textFieldShouldReturn(_ textField: UITextField) -> Bool {
+        textField.resignFirstResponder()
+        filterTrackers()
+        collectionView.reloadData()
+        return true
+    }
+    
 }

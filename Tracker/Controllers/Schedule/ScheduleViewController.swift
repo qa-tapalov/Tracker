@@ -113,7 +113,7 @@ extension ScheduleViewController: UITableViewDelegate, UITableViewDataSource {
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         tableView.deselectRow(at: indexPath, animated: true)
-        let cell = tableView.cellForRow(at: indexPath) as! ScheduleTableViewCell
+        guard let cell = tableView.cellForRow(at: indexPath) as? ScheduleTableViewCell else {return}
         cell.switchView.isOn = !cell.switchView.isOn
         switchChanged(cell.switchView)
     }
