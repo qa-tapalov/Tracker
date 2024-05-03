@@ -15,7 +15,7 @@ struct Tracker {
     let shedule: [WeekDay]
 }
 
-enum WeekDay: Int {
+enum WeekDay: Int, Codable {
     case sunday = 1
     case monday = 2
     case thusday = 3

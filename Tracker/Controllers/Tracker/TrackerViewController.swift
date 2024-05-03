@@ -6,6 +6,7 @@
 //
 
 import UIKit
+import CoreData
 
 protocol AddTrackerDelegate: AnyObject {
     func didAddTracker(_ tracker: Tracker, title: String)
