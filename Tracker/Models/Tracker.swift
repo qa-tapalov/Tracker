@@ -12,7 +12,7 @@ struct Tracker {
     let name: String
     let color: UIColor
     let emogi: String
-    let shedule: [WeekDay]
+    let schedule: [Int]
 }
 
 enum WeekDay: Int, Codable {

@@ -14,9 +14,34 @@ final class TrackerCategoryStore {
     
     private init(){}
     
-    func addCategory(category: String){
-        let categoryEntity = TrackerCategoryCoreData(context: coreDataManager.context)
-        categoryEntity.title = category
-        coreDataManager.saveContext()
+    func addCategory(category: String) throws{
+        let fetchRequest: NSFetchRequest<TrackerCategoryCoreData> = TrackerCategoryCoreData.fetchRequest()
+        fetchRequest.predicate = NSPredicate(format: "title == %@", category)
+        
+        do {
+            let results = try coreDataManager.context.fetch(fetchRequest)
+            if results.isEmpty {
+                let categoryEntity = TrackerCategoryCoreData(context: coreDataManager.context)
+                categoryEntity.title = category
+            }
+            coreDataManager.saveContext()
+        }
+        catch let error as NSError {
+            print("Ошибка добавления новой категории. \(error), \(error.userInfo)")
+            throw error
+        }
+    }
+    
+    func fetchCategory() throws{
+        let request: NSFetchRequest<TrackerCategoryCoreData> = TrackerCategoryCoreData.fetchRequest()
+        do {
+            let categoryList = try coreDataManager.context.fetch(request)
+            print(categoryList)
+        } catch let error as NSError {
+            print("Ошибка извлечения категорий. \(error), \(error.userInfo)")
+            throw error
+        }
+        
     }
 }
+

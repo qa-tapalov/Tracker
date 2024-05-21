@@ -18,13 +18,13 @@ final class DaysValueTransformer: ValueTransformer {
     }
     
     override func transformedValue(_ value: Any?) -> Any? {
-        guard let days = value as? [WeekDay] else {return nil}
+        guard let days = value as? [Int] else {return nil}
         return try? JSONEncoder().encode(days)
     }
     
     override func reverseTransformedValue(_ value: Any?) -> Any? {
         guard let data = value as? NSData else {return nil}
-        return try? JSONDecoder().decode([WeekDay].self, from: data as Data)
+        return try? JSONDecoder().decode([Int].self, from: data as Data)
     }
     
     static func register() {

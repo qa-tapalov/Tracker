@@ -18,7 +18,7 @@ final class CoreDataManager {
     }
     
     lazy var persistentContainer: NSPersistentContainer = {
-        let container = NSPersistentContainer(name: "TrackerCoreData")
+        let container = NSPersistentContainer(name: "CoreDataModel")
         container.loadPersistentStores { (storeDescription, error) in
             if let error = error as NSError? {
                 

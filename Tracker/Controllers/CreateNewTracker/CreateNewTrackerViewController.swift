@@ -45,6 +45,9 @@ final class CreateNewTrackerViewController: UIViewController {
         }
     }
     
+    private let trackerStore = TrackerStore.shared
+    private let categoryStore = TrackerCategoryStore.shared
+    
     private let viewModel: [Section] = [
         .textField,
         .detail,
@@ -155,7 +158,7 @@ final class CreateNewTrackerViewController: UIViewController {
         self.view.window?.rootViewController?.dismiss(animated: true, completion: nil)
     }
     
-    @objc func saveTracker(){
+    @objc func saveTracker() throws {
         let cellTextField = tableView.cellForRow(at: IndexPath(row: 0, section: 0)) as? TextFieldTableViewCell
         let cellEmoji = tableView.cellForRow(at: IndexPath(row: 0, section: 2)) as? EmojiCollectionTableViewCell
         let cellColors = tableView.cellForRow(at: IndexPath(row: 0, section: 3)) as? ColorsCollectionTableViewCell
@@ -168,8 +171,9 @@ final class CreateNewTrackerViewController: UIViewController {
                               name: name,
                               color: color,
                               emogi: emoji,
-                              shedule: selectedDay)
-        
+                              schedule: selectedDay.map {$0.rawValue})
+        try categoryStore.addCategory(category: "Без категории")
+        try trackerStore.addTracker(tracker: tracker, categoryTitle: "Без категории")
         delegateAddTracker?.didAddTracker(tracker, title: "Без категории")
         self.view.window?.rootViewController?.dismiss(animated: true, completion: nil)
     }
