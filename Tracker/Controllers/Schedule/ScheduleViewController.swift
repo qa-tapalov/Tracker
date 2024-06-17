@@ -106,7 +106,6 @@ extension ScheduleViewController: UITableViewDelegate, UITableViewDataSource {
     }
     
     @objc private func saveSchedule(){
-        print(selectedDays)
         delegate?.returnSchedule(selectedDays)
         dismiss(animated: true)
     }
