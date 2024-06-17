@@ -18,7 +18,7 @@ final class TrackerViewController: UIViewController {
     var completedTrackers: [TrackerRecord] = []
     private let trackerStore = TrackerStore.shared
     private let recordsStore = TrackerRecordStore.shared
-    
+    private let categoryStore = TrackerCategoryStore.shared
     private lazy var labelEmptyList: UILabel = {
         let view = UILabel()
         view.text = "Что будем отслеживать?"
@@ -73,8 +73,7 @@ final class TrackerViewController: UIViewController {
     }
     
     private func fetchData(){
-        let trackers = trackerStore.trackers
-        categories = [TrackerCategory(title: "Без категории", trackers: trackers)]
+        categories = categoryStore.category
         completedTrackers = recordsStore.fetchTrackerRecords()
     }
     

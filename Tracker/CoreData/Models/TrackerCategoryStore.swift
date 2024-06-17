@@ -11,8 +11,16 @@ final class TrackerCategoryStore {
     
     static let shared = TrackerCategoryStore()
     private let coreDataManager = CoreDataManager.shared
-    
+    private let trackerStore = TrackerStore.shared
     private init(){}
+    
+    var category: [TrackerCategory] {
+        guard let objects = try? self.fetchCategory() else {
+            return []
+        }
+        let category = objects.compactMap({ self.category(category: $0) })
+        return category
+    }
     
     func addCategory(category: String) throws{
         let fetchRequest: NSFetchRequest<TrackerCategoryCoreData> = TrackerCategoryCoreData.fetchRequest()
@@ -32,16 +40,30 @@ final class TrackerCategoryStore {
         }
     }
     
-    func fetchCategory() throws{
+    func fetchCategory() throws -> [TrackerCategoryCoreData]{
         let request: NSFetchRequest<TrackerCategoryCoreData> = TrackerCategoryCoreData.fetchRequest()
+        var categoryList = [TrackerCategoryCoreData]()
         do {
-            let categoryList = try coreDataManager.context.fetch(request)
-            print(categoryList)
+            categoryList = try coreDataManager.context.fetch(request)
+            
         } catch let error as NSError {
             print("Ошибка извлечения категорий. \(error), \(error.userInfo)")
             throw error
         }
-        
+        return categoryList
+    }
+    
+    func category(category: TrackerCategoryCoreData) -> TrackerCategory?{
+        guard let title = category.title,
+              let trackers = category.trackers
+        else {return nil}
+        return TrackerCategory(title: title, trackers: trackers.compactMap {
+            trackerCoreData -> Tracker? in
+            if let trackerCoreData = trackerCoreData as? TrackerCoreData {
+                return try? trackerStore.tracker(tracker: trackerCoreData)
+            }
+            return nil
+        })
     }
 }
 
