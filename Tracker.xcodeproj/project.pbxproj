@@ -95,6 +95,14 @@
 			path = Onboarding;
 			sourceTree = "<group>";
 		};
+		1B50D20C2C24337F0082FB08 /* CreateCategories */ = {
+			isa = PBXGroup;
+			children = (
+				1B8D3F522BCFE62B001841AC /* CategoriesViewController.swift */,
+			);
+			path = CreateCategories;
+			sourceTree = "<group>";
+		};
 		1B7070982BEB3D7900F28393 /* CoreData */ = {
 			isa = PBXGroup;
 			children = (
@@ -170,6 +178,7 @@
 		1B91DFB92BBEC822009ADD8E /* Controllers */ = {
 			isa = PBXGroup;
 			children = (
+				1B50D20C2C24337F0082FB08 /* CreateCategories */,
 				1B50D2072C203F960082FB08 /* Onboarding */,
 				1BB5B53C2BC8300D007FB91E /* Schedule */,
 				1B91DFED2BC6B587009ADD8E /* CreateNewTracker */,
@@ -177,7 +186,6 @@
 				1B91DFBD2BBFBDA2009ADD8E /* Statistic */,
 				1B91DFBC2BBFBD93009ADD8E /* Tracker */,
 				1B91DFB72BBEAD61009ADD8E /* TabBarController.swift */,
-				1B8D3F522BCFE62B001841AC /* CategoriesViewController.swift */,
 			);
 			path = Controllers;
 			sourceTree = "<group>";
