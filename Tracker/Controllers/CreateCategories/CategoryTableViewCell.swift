@@ -10,7 +10,7 @@ import UIKit
 final class CategoryTableViewCell: UITableViewCell {
     static let categoryCellIdentifier = "CategoryCell"
     
-    lazy var title: UILabel = {
+    private lazy var title: UILabel = {
         let view = UILabel()
         view.translatesAutoresizingMaskIntoConstraints = false
         view.textColor = AppColors.blackDay
@@ -36,6 +36,10 @@ final class CategoryTableViewCell: UITableViewCell {
             title.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 16),
             title.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -41),
         ])
+    }
+    
+    func configCell(title: String){
+        self.title.text = title
     }
     
 }

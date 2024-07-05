@@ -7,7 +7,14 @@
 
 import Foundation
 
-final class CategoryViewModel {
+protocol CategoryViewModelProtocol: AnyObject {
+    var cellCategoryDataSource: Observable<[TrackerCategory]> { get set }
+    func addCategory(category: TrackerCategory) throws
+    func numbersOfRows() -> Int
+    func fetchCategory()
+}
+
+final class CategoryViewModel: CategoryViewModelProtocol {
     
     private let categoryStore = TrackerCategoryStore.shared
     var cellCategoryDataSource: Observable<[TrackerCategory]> = Observable(value: nil)

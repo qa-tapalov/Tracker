@@ -55,7 +55,7 @@ final class CategoriesViewController: UIViewController {
         return view
     }()
     
-    private let viewModel = CategoryViewModel()
+    private var viewModel: CategoryViewModelProtocol?
     var selectedCategory = ""
     private var cellDataSource: [TrackerCategory] = []
     weak var delegate: SelectCategoryDelegate?
@@ -66,6 +66,15 @@ final class CategoriesViewController: UIViewController {
         bindViewModel()
     }
     
+    init() {
+        super.init(nibName: nil, bundle: nil)
+        self.viewModel = CategoryViewModel()
+    }
+    
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+    
     @objc private func buttonAction(){
         let vc = CreateNewCategoryViewController()
         vc.modalPresentationStyle = .pageSheet
@@ -74,7 +83,7 @@ final class CategoriesViewController: UIViewController {
     }
     
     private func bindViewModel(){
-        viewModel.cellCategoryDataSource.bind { [weak self] category in
+        viewModel?.cellCategoryDataSource.bind { [weak self] category in
             guard let self, let category else { return }
             DispatchQueue.main.async {
                 self.cellDataSource = category
@@ -97,7 +106,7 @@ private extension CategoriesViewController {
         setupTableView()
         setupStubImage()
         setupLabelEmptyList()
-        viewModel.fetchCategory()
+        viewModel?.fetchCategory()
     }
     
     private func setupTableView(){
@@ -149,7 +158,7 @@ extension CategoriesViewController: UITableViewDelegate {
 extension CategoriesViewController: UITableViewDataSource {
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        if viewModel.numbersOfRows() == 0 {
+        if viewModel?.numbersOfRows() == 0 {
             tableView.isHidden = true
             stubImage.isHidden = false
             labelEmptyList.isHidden = false
@@ -170,7 +179,8 @@ extension CategoriesViewController: UITableViewDataSource {
         } else {
             cell.accessoryType = .none
         }
-        cell.title.text = cellDataSource[indexPath.row].title
+        let title = cellDataSource[indexPath.row].title
+        cell.configCell(title: title)
         return cell
     }
     
@@ -181,6 +191,6 @@ extension CategoriesViewController: UITableViewDataSource {
 //MARK: - NewCategoryDelegate
 extension CategoriesViewController: NewCategoryDelegate {
     func didAddNewCategory(_ category: TrackerCategory) throws {
-        try viewModel.addCategory(category: category)
+        try viewModel?.addCategory(category: category)
     }
 }

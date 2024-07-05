@@ -38,7 +38,7 @@ final class OnboardingController: UIPageViewController {
     }
     
     @objc private func actionButton() {
-        guard let window = UIApplication.shared.windows.first else { fatalError("Invalid Configuration") }
+        guard let window = UIApplication.shared.windows.first else { return assertionFailure("Invalid Configuration") }
         let tabBarController = TabBarController()
         userStorage.skipOnboarding = true
         window.rootViewController = tabBarController
