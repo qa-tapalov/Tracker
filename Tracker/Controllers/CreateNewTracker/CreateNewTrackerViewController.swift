@@ -45,6 +45,12 @@ final class CreateNewTrackerViewController: UIViewController {
         }
     }
     
+    private var selectedCategory = "" {
+        didSet {
+            updateDoneButtonState()
+        }
+    }
+    
     private let trackerStore = TrackerStore.shared
     private let categoryStore = TrackerCategoryStore.shared
     
@@ -172,9 +178,8 @@ final class CreateNewTrackerViewController: UIViewController {
                               color: color,
                               emogi: emoji,
                               schedule: selectedDay.map {$0.rawValue})
-        try categoryStore.addCategory(category: "Без категории")
-        try trackerStore.addTracker(tracker: tracker, categoryTitle: "Без категории")
-        delegateAddTracker?.didAddTracker(tracker, title: "Без категории")
+        try trackerStore.addTracker(tracker: tracker, categoryTitle: selectedCategory)
+        delegateAddTracker?.didAddTracker(tracker, title: selectedCategory)
         self.view.window?.rootViewController?.dismiss(animated: true, completion: nil)
     }
     
@@ -236,7 +241,11 @@ extension CreateNewTrackerViewController: UITableViewDataSource, UITableViewDele
             cell.title.text = nameOptionCell[indexPath.row]
             
             switch indexPath.row {
-            case 0: break
+            case 0: 
+                if selectedCategory != "" {
+                    cell.addSubTitles()
+                    cell.subTitle.text = selectedCategory
+                }
             case 1:
                 if !selectedDay.isEmpty {
                     cell.addSubTitles()
@@ -296,6 +305,8 @@ extension CreateNewTrackerViewController: UITableViewDataSource, UITableViewDele
             case 0:
                 let vc = CategoriesViewController()
                 vc.modalPresentationStyle = .formSheet
+                vc.selectedCategory = selectedCategory
+                vc.delegate = self
                 self.present(UINavigationController(rootViewController:vc), animated: true)
             case 1:
                 let vc = ScheduleViewController(selectedDays: selectedDay)
@@ -357,8 +368,8 @@ extension CreateNewTrackerViewController: CellCountDelegate, CellSelectedDelegat
         let isColorSelected = cellColors?.selectedColor != nil
         var isScheduleSelected: Bool = false
         typeTracker == nil ? (isScheduleSelected = !selectedDay.isEmpty) : (isScheduleSelected = true)
-        
-        if isTextFieldFilled && isEmojiSelected && isColorSelected && isScheduleSelected{
+        let isCategorySelected = selectedCategory != ""
+        if isTextFieldFilled && isEmojiSelected && isColorSelected && isScheduleSelected && isCategorySelected{
             buttonCreate.backgroundColor = AppColors.blackDay
             buttonCreate.isEnabled = true
         } else {
@@ -375,4 +386,11 @@ protocol CellSelectedDelegate: AnyObject {
 
 protocol SaveScheduleDelegate: AnyObject {
     func returnSchedule(_ schedule: [WeekDay])
+}
+
+extension CreateNewTrackerViewController: SelectCategoryDelegate {
+    func didSelectCategory(_ categoryTitle: String) {
+        self.selectedCategory = categoryTitle
+        tableView.reloadData()
+    }
 }
