@@ -12,6 +12,7 @@ protocol CategoryViewModelProtocol: AnyObject {
     func addCategory(category: TrackerCategory) throws
     func numbersOfRows() -> Int
     func fetchCategory()
+    func deleteCategory(category: TrackerCategory) throws
 }
 
 final class CategoryViewModel: CategoryViewModelProtocol {
@@ -21,7 +22,7 @@ final class CategoryViewModel: CategoryViewModelProtocol {
     private var categoryDataSource: [TrackerCategory] = []
     
     func addCategory(category: TrackerCategory) throws {
-        try categoryStore.addCategory(category: category.title)
+        try categoryStore.addCategory(category: category)
         fetchCategory()
     }
     
@@ -32,5 +33,10 @@ final class CategoryViewModel: CategoryViewModelProtocol {
     func fetchCategory(){
         categoryDataSource = categoryStore.category
         cellCategoryDataSource.value = categoryDataSource
+    }
+    
+    func deleteCategory(category: TrackerCategory) throws {
+        try categoryStore.deleteCategory(category: category)
+        fetchCategory()
     }
 }

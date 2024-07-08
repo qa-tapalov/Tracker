@@ -77,7 +77,7 @@ final class CategoriesViewController: UIViewController {
     
     @objc private func buttonAction(){
         let vc = CreateNewCategoryViewController()
-        vc.modalPresentationStyle = .pageSheet
+        vc.modalPresentationStyle = .formSheet
         vc.delegate = self
         self.present(UINavigationController(rootViewController:vc), animated: true)
     }
@@ -152,6 +152,29 @@ extension CategoriesViewController: UITableViewDelegate {
         tableView.reloadData()
         delegate?.didSelectCategory(selectedCategory)
         dismiss(animated: true)
+    }
+    
+    func tableView(_ tableView: UITableView, contextMenuConfigurationForRowAt indexPath: IndexPath, point: CGPoint) -> UIContextMenuConfiguration? {
+        guard indexPath.count > 0 else {
+            return nil
+        }
+        
+        let category = cellDataSource[indexPath.row]
+        
+        return UIContextMenuConfiguration(actionProvider: {action in
+            return UIMenu(children: [
+                UIAction(title: "Удалить", attributes: .destructive, handler: { [weak self] _ in
+                    let alert = UIAlertController(title: "Эта категория точно не нужна?", message: nil, preferredStyle: .actionSheet)
+                    let deleteAction = UIAlertAction(title: "Удалить", style: .destructive) { _ in
+                        try? self?.viewModel?.deleteCategory(category: category)
+                    }
+                    let cancel = UIAlertAction(title: "Отменить", style: .cancel)
+                    alert.addAction(deleteAction)
+                    alert.addAction(cancel)
+                    self?.present(alert, animated: true)
+                })
+            ])
+        })
     }
 }
 //MARK: - UITableViewDataSource

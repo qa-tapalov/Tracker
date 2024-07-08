@@ -22,15 +22,15 @@ final class TrackerCategoryStore {
         return category
     }
     
-    func addCategory(category: String) throws{
+    func addCategory(category: TrackerCategory) throws {
         let fetchRequest: NSFetchRequest<TrackerCategoryCoreData> = TrackerCategoryCoreData.fetchRequest()
-        fetchRequest.predicate = NSPredicate(format: "title == %@", category)
+        fetchRequest.predicate = NSPredicate(format: "title == %@", category.title)
         
         do {
             let results = try coreDataManager.context.fetch(fetchRequest)
             if results.isEmpty {
                 let categoryEntity = TrackerCategoryCoreData(context: coreDataManager.context)
-                categoryEntity.title = category
+                categoryEntity.title = category.title
             }
             coreDataManager.saveContext()
         }
@@ -64,6 +64,23 @@ final class TrackerCategoryStore {
             }
             return nil
         })
+    }
+    
+    func deleteCategory(category: TrackerCategory) throws{
+        let fetchRequest: NSFetchRequest<TrackerCategoryCoreData> = TrackerCategoryCoreData.fetchRequest()
+        fetchRequest.predicate = NSPredicate(format: "title == %@", category.title)
+        
+        do {
+            let results = try coreDataManager.context.fetch(fetchRequest)
+            if let objectToDelete = results.first {
+                coreDataManager.context.delete(objectToDelete)
+            }
+            coreDataManager.saveContext()
+        }
+        catch let error as NSError {
+            print("Ошибка удаления категории. \(error), \(error.userInfo)")
+            throw error
+        }
     }
 }
 

@@ -153,7 +153,6 @@ final class TrackerViewController: UIViewController {
     }
     
     private func filterTrackers(){
-       
         let selectedDate = datePicker.date
         let filterWeekday = Calendar.current.component(.weekday, from: selectedDate)
         let filterText = searchTextField.text?.lowercased() ?? ""
@@ -296,20 +295,7 @@ extension TrackerViewController: TrackerCellDelegate {
 
 extension TrackerViewController: AddTrackerDelegate {
     func didAddTracker(_ tracker: Tracker, title: String) {
-        let trackerCategory = TrackerCategory(title: title, trackers: [tracker])
-        
-        if categories.isEmpty {
-            categories.append(trackerCategory)
-        } else {
-            if let index = categories.firstIndex(where: { $0.title == title}) {
-                var filteredTracker = categories[index].trackers
-                filteredTracker.append(tracker)
-                let newTrackerCategory = TrackerCategory(title: title, trackers: filteredTracker)
-                categories[index] = newTrackerCategory
-            } else {
-                categories.append(trackerCategory)
-            }
-        }
+        categories = categoryStore.category
         dateValueChanged()
         collectionView.reloadData()
     }
