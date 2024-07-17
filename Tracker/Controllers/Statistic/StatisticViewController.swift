@@ -18,7 +18,7 @@ final class StatisticViewController: UIViewController {
     
     private lazy var labelEmptyList: UILabel = {
         let view = UILabel()
-        view.text = "Анализировать пока нечего"
+        view.text = NSLocalizedString("emptyStatistics", comment: "Title for empty statistic")
         view.font = UIFont.systemFont(ofSize: 12, weight: .medium)
         view.textAlignment = .center
         view.translatesAutoresizingMaskIntoConstraints = false
@@ -54,7 +54,7 @@ private extension StatisticViewController {
     private func setupView(){
         view.backgroundColor = AppColors.whiteDay
         navigationController?.navigationBar.prefersLargeTitles = true
-        title = "Статистика"
+        title = NSLocalizedString("StatisticsTitle", comment: "Title for statistic tab")
         view.addSubview(stubImage)
         view.addSubview(labelEmptyList)
         view.addSubview(tableView)

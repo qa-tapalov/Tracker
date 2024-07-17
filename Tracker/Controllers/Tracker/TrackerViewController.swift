@@ -21,7 +21,7 @@ final class TrackerViewController: UIViewController {
     private let categoryStore = TrackerCategoryStore.shared
     private lazy var labelEmptyList: UILabel = {
         let view = UILabel()
-        view.text = "Что будем отслеживать?"
+        view.text = NSLocalizedString("emptyListTrackers", comment: "Title for empty trackers")
         view.font = UIFont.systemFont(ofSize: 12, weight: .medium)
         view.translatesAutoresizingMaskIntoConstraints = false
         return view
@@ -63,7 +63,7 @@ final class TrackerViewController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        title = "Трекер"
+        title = NSLocalizedString("TrackersTitle", comment: "Title for trackers tab")
         
         setupView()
         trackerStore.delegate = self

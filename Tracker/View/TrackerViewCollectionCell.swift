@@ -110,6 +110,7 @@ final class TrackerViewCollectionCell: UICollectionViewCell {
     }
     
     private func setup(){
+        self.layer.cornerRadius = 16
         contentView.addSubview(containerView)
         containerView.addSubview(emogiLabel)
         containerView.addSubview(titleNameTracker)
@@ -191,11 +192,11 @@ final class TrackerViewCollectionCell: UICollectionViewCell {
         let remainder100 = count % 100
         
         if remainder10 == 1 && remainder100 != 11 {
-            return "\(count) день"
+            return "\(count) \(NSLocalizedString("dayLabel", comment: "Title for label daysLabel"))"
         } else if remainder10 >= 2 && remainder10 <= 4 && (remainder100 < 10 || remainder100 >= 20) {
-            return "\(count) дня" }
+            return "\(count) \(NSLocalizedString("daysFewLabel", comment: "Title for label daysLabel"))" }
         else {
-            return "\(count) дней"
+            return "\(count) \(NSLocalizedString("daysManyLabel", comment: "Title for label daysLabel"))"
         }
     }
 }

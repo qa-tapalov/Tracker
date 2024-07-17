@@ -1,0 +1,16 @@
+/* 
+  Localizable.strings
+  Tracker
+
+  Created by Андрей Тапалов on 16.07.2024.
+  
+*/
+
+"TrackersTitle" = "Trackers";
+"FiltersTitle" = "Filters";
+"StatisticsTitle" = "Statistics";
+"dayLabel" = "day";
+"daysFewLabel" = "days";
+"daysManyLabel" = "days";
+"emptyStatistics" = "There is nothing to analyze yet";
+"emptyListTrackers" = "What will we track?";
