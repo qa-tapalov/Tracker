@@ -19,7 +19,7 @@ final class SupplementaryView: UICollectionReusableView {
     
     func setupTitleView(){
         title.font = .systemFont(ofSize: 18, weight: .bold)
-        title.textColor = AppColors.blackDay
+        title.textColor = UIColor(resource: .black)
         title.translatesAutoresizingMaskIntoConstraints = false
         addSubview(title)
         

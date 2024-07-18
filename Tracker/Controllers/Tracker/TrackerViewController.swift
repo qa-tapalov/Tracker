@@ -83,12 +83,12 @@ final class TrackerViewController: UIViewController {
             target: self,
             action: #selector(addTracker))
         navigationItem.rightBarButtonItem = UIBarButtonItem(customView: datePicker)
-        navigationController?.navigationBar.tintColor = .black
+        navigationController?.navigationBar.tintColor = UIColor(resource: .black)
         navigationController?.navigationBar.prefersLargeTitles = true
     }
     
     private func setupView(){
-        view.backgroundColor = AppColors.whiteDay
+        view.backgroundColor = UIColor(resource: .white)
         view.addSubview(stubImage)
         view.addSubview(labelEmptyList)
         view.addSubview(collectionView)

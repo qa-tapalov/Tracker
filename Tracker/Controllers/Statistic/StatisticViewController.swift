@@ -30,7 +30,7 @@ final class StatisticViewController: UIViewController {
         let view = UITableView(frame: .zero, style: .insetGrouped)
         view.translatesAutoresizingMaskIntoConstraints = false
         view.dataSource = self
-        view.backgroundColor = AppColors.whiteDay
+        view.backgroundColor = UIColor(resource: .white)
         view.separatorColor = AppColors.gray
         view.contentInset = UIEdgeInsets(top: 0, left: 0, bottom: 0, right: 0)
         view.isScrollEnabled = false
@@ -52,7 +52,7 @@ final class StatisticViewController: UIViewController {
 private extension StatisticViewController {
     
     private func setupView(){
-        view.backgroundColor = AppColors.whiteDay
+        view.backgroundColor = UIColor(resource: .white)
         navigationController?.navigationBar.prefersLargeTitles = true
         title = NSLocalizedString("StatisticsTitle", comment: "Title for statistic tab")
         view.addSubview(stubImage)

@@ -66,7 +66,7 @@ final class CreateNewTrackerViewController: UIViewController {
         view.translatesAutoresizingMaskIntoConstraints = false
         view.dataSource = self
         view.delegate = self
-        view.backgroundColor = AppColors.whiteDay
+        view.backgroundColor = UIColor(resource: .white)
         view.separatorColor = AppColors.gray
         view.contentInset = UIEdgeInsets(top: 0, left: 0, bottom: 0, right: 0)
         view.keyboardDismissMode = .onDrag
@@ -96,7 +96,7 @@ final class CreateNewTrackerViewController: UIViewController {
         view.layer.borderColor = AppColors.redBase.cgColor
         view.layer.cornerRadius = 16
         view.layer.masksToBounds = true
-        view.backgroundColor = AppColors.whiteDay
+        view.backgroundColor = UIColor(resource: .white)
         view.setTitleColor(AppColors.redBase, for: .normal)
         view.addTarget(self, action: #selector(tapButtonCancel), for: .touchUpInside)
         return view
@@ -109,7 +109,7 @@ final class CreateNewTrackerViewController: UIViewController {
         view.titleLabel?.font = UIFont.systemFont(ofSize: 16, weight: .medium)
         view.layer.cornerRadius = 16
         view.layer.masksToBounds = true
-        view.setTitleColor(AppColors.whiteDay, for: .normal)
+        view.setTitleColor(UIColor(resource: .white), for: .normal)
         view.backgroundColor = AppColors.gray
         view.addTarget(self, action: #selector(saveTracker), for: .touchUpInside)
         view.isEnabled = false
@@ -118,7 +118,7 @@ final class CreateNewTrackerViewController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        view.backgroundColor = AppColors.whiteDay
+        view.backgroundColor = UIColor(resource: .white)
         title = "Новая привычка"
         setupStack()
         setupButtonCancel()
@@ -331,7 +331,7 @@ extension CreateNewTrackerViewController: UITableViewDataSource, UITableViewDele
     func tableView(_ tableView: UITableView, willDisplayHeaderView view: UIView, forSection section: Int) {
         let header = view as? UITableViewHeaderFooterView
         header?.textLabel?.font = UIFont.systemFont(ofSize: 19, weight: .bold)
-        header?.textLabel?.textColor = AppColors.blackDay
+        header?.textLabel?.textColor = UIColor(resource: .black)
         header?.textLabel?.text = header?.textLabel?.text?.capitalizeFirstLetter()
     }
 }
@@ -370,7 +370,7 @@ extension CreateNewTrackerViewController: CellCountDelegate, CellSelectedDelegat
         typeTracker == nil ? (isScheduleSelected = !selectedDay.isEmpty) : (isScheduleSelected = true)
         let isCategorySelected = selectedCategory != ""
         if isTextFieldFilled && isEmojiSelected && isColorSelected && isScheduleSelected && isCategorySelected{
-            buttonCreate.backgroundColor = AppColors.blackDay
+            buttonCreate.backgroundColor = UIColor(resource: .black)
             buttonCreate.isEnabled = true
         } else {
             buttonCreate.backgroundColor = AppColors.gray

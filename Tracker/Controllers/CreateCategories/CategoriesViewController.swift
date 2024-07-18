@@ -33,11 +33,11 @@ final class CategoriesViewController: UIViewController {
     private lazy var button: UIButton = {
         let view = UIButton()
         view.translatesAutoresizingMaskIntoConstraints = false
-        view.backgroundColor = AppColors.blackDay
+        view.backgroundColor = UIColor(resource: .black)
         view.layer.cornerRadius = 16
         view.setTitle("Добавить категорию", for: .normal)
         view.titleLabel?.font = UIFont.systemFont(ofSize: 16, weight: .medium)
-        view.titleLabel?.textColor = AppColors.whiteDay
+        view.setTitleColor(UIColor(resource: .white), for: .normal)
         view.addTarget(self, action: #selector(buttonAction), for: .touchUpInside)
         return view
     }()
@@ -47,7 +47,7 @@ final class CategoriesViewController: UIViewController {
         view.translatesAutoresizingMaskIntoConstraints = false
         view.dataSource = self
         view.delegate = self
-        view.backgroundColor = AppColors.whiteDay
+        view.backgroundColor = UIColor(resource: .white)
         view.separatorColor = AppColors.gray
         view.contentInset = UIEdgeInsets(top: 0, left: 0, bottom: 0, right: 0)
         view.keyboardDismissMode = .onDrag
@@ -97,7 +97,7 @@ private extension CategoriesViewController {
     
     private func setupView(){
         title = "Категория"
-        view.backgroundColor = AppColors.whiteDay
+        view.backgroundColor = UIColor(resource: .white)
         view.addSubview(button)
         view.addSubview(stubImage)
         view.addSubview(labelEmptyList)

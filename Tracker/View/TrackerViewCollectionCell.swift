@@ -26,7 +26,7 @@ final class TrackerViewCollectionCell: UICollectionViewCell {
     lazy var titleNameTracker: UILabel = {
         let view = UILabel()
         view.numberOfLines = 2
-        view.textColor = AppColors.whiteDay
+        view.textColor = UIColor(resource: .white)
         view.font = UIFont.systemFont(ofSize: 12, weight: .medium)
         view.translatesAutoresizingMaskIntoConstraints = false
         return view
@@ -66,7 +66,7 @@ final class TrackerViewCollectionCell: UICollectionViewCell {
     lazy var buttonPin: UIButton = {
         let view = UIButton()
         view.setImage(UIImage(systemName: "pin.fill"), for: .normal)
-        view.tintColor = AppColors.whiteDay
+        view.tintColor = UIColor(resource: .white)
         view.translatesAutoresizingMaskIntoConstraints = false
         view.isHidden = true
         return view

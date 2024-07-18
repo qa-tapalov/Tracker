@@ -16,7 +16,7 @@ final class TextFieldTableViewCell: UITableViewCell {
         view.translatesAutoresizingMaskIntoConstraints = false
         view.borderStyle = .roundedRect
         view.attributedPlaceholder = NSAttributedString(string: "Введите название трекера", attributes: [NSAttributedString.Key.foregroundColor: AppColors.gray,NSAttributedString.Key.font: UIFont.systemFont(ofSize: 17, weight: .regular)])
-        view.textColor = AppColors.blackDay
+        view.textColor = UIColor(resource: .black)
         view.backgroundColor = AppColors.lightGray.withAlphaComponent(0.3)
         view.layer.cornerRadius = 16
         view.layer.masksToBounds = true

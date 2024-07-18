@@ -15,7 +15,7 @@ final class TabBarController: UITabBarController {
     }
     
     private func configureTabBar(){
-        tabBar.backgroundColor = AppColors.whiteDay
+        tabBar.backgroundColor = UIColor(resource: .white)
         
         let vc1 = UINavigationController(rootViewController: TrackerViewController())
         let vc2 = UINavigationController(rootViewController: StatisticViewController())

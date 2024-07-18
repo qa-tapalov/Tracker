@@ -59,7 +59,7 @@ extension EmojiCollectionTableViewCell: UICollectionViewDelegateFlowLayout, UICo
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: EmogiCollectionViewCell.identifier, for: indexPath) as? EmogiCollectionViewCell else {return UICollectionViewCell()}
-        cell.backgroundColor = AppColors.whiteDay
+        cell.backgroundColor = UIColor(resource: .white)
         cell.titleLabel.text = emogis[indexPath.row]
         return cell
     }

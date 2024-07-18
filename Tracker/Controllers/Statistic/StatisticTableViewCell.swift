@@ -14,7 +14,7 @@ final class StatisticTableViewCell: UITableViewCell {
     lazy var title: UILabel = {
         let view = UILabel()
         view.translatesAutoresizingMaskIntoConstraints = false
-        view.textColor = AppColors.blackDay
+        view.textColor = UIColor(resource: .black)
         view.font = UIFont.systemFont(ofSize: 34, weight: .bold)
         return view
     }()
@@ -22,7 +22,7 @@ final class StatisticTableViewCell: UITableViewCell {
     lazy var subTitle: UILabel = {
         let view = UILabel()
         view.translatesAutoresizingMaskIntoConstraints = false
-        view.textColor = AppColors.blackDay
+        view.textColor = UIColor(resource: .black)
         view.font = UIFont.systemFont(ofSize: 12, weight: .medium)
         return view
     }()
@@ -40,7 +40,7 @@ final class StatisticTableViewCell: UITableViewCell {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
         setupStack()
         setupViews()
-        self.backgroundColor = AppColors.whiteDay
+        self.backgroundColor = UIColor(resource: .white)
     }
     
     required init?(coder: NSCoder) {

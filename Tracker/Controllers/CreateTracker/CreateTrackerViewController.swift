@@ -28,6 +28,7 @@ final class CreateTrackerViewController: UIViewController {
     private lazy var buttonCreateHabit: UIButton = {
         let view = UIButton()
         view.setTitle("Привычка", for: .normal)
+        view.setTitleColor(UIColor(resource: .white), for: .normal)
         view.titleLabel?.font = UIFont.systemFont(ofSize: 16, weight: .medium)
         view.translatesAutoresizingMaskIntoConstraints = false
         view.addTarget(self, action: #selector(createHabit(_:)), for: .touchUpInside)
@@ -37,6 +38,7 @@ final class CreateTrackerViewController: UIViewController {
     private lazy var buttonCreateEvent: UIButton = {
         let view = UIButton()
         view.setTitle("Нерегулярное событие", for: .normal)
+        view.setTitleColor(UIColor(resource: .white), for: .normal)
         view.titleLabel?.font = UIFont.systemFont(ofSize: 16, weight: .medium)
         view.translatesAutoresizingMaskIntoConstraints = false
         view.addTarget(self, action: #selector(createEvent(_:)), for: .touchUpInside)
@@ -45,7 +47,7 @@ final class CreateTrackerViewController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        view.backgroundColor = AppColors.whiteDay
+        view.backgroundColor = UIColor(resource: .white)
         title = "Создание трекера"
         setupStackView()
         setupButtonHabit()
@@ -63,7 +65,7 @@ final class CreateTrackerViewController: UIViewController {
     
     private func setupButtonHabit(){
         stack.addArrangedSubview(buttonCreateHabit)
-        buttonCreateHabit.backgroundColor = AppColors.blackDay
+        buttonCreateHabit.backgroundColor = UIColor(resource: .black)
         buttonCreateHabit.layer.cornerRadius = 16
         buttonCreateHabit.layer.masksToBounds = true
         NSLayoutConstraint.activate([
@@ -75,7 +77,7 @@ final class CreateTrackerViewController: UIViewController {
     
     private func setupButtonEvent(){
         stack.addArrangedSubview(buttonCreateEvent)
-        buttonCreateEvent.backgroundColor = AppColors.blackDay
+        buttonCreateEvent.backgroundColor = UIColor(resource: .black)
         buttonCreateEvent.layer.cornerRadius = 16
         buttonCreateEvent.layer.masksToBounds = true
         NSLayoutConstraint.activate([
