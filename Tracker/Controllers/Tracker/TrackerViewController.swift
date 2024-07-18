@@ -64,17 +64,16 @@ final class TrackerViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         title = NSLocalizedString("TrackersTitle", comment: "Title for trackers tab")
-        
         setupView()
         trackerStore.delegate = self
         fetchData()
-        dateValueChanged()
         configureNavBar()
     }
     
     private func fetchData(){
         categories = categoryStore.category
         completedTrackers = recordsStore.fetchTrackerRecords()
+        dateValueChanged()
     }
     
     private func configureNavBar(){
@@ -216,6 +215,20 @@ extension TrackerViewController: UICollectionViewDataSource {
             return trackerRecord.trackerId == id && isSameDay
         }
     }
+    
+    func deleteTracker(at indexPath: IndexPath) {
+        let alert = UIAlertController(title: "Уверены, что хотите удалить трекер?", message: nil, preferredStyle: .actionSheet)
+        let deleteAction = UIAlertAction(title: "Удалить", style: .destructive) { [weak self] _ in
+            guard let self else {return}
+            let trackerId = filteredCategories[indexPath.section].trackers[indexPath.row].id
+            try? self.trackerStore.deleteTracker(with: trackerId)
+            fetchData()
+        }
+        let cancel = UIAlertAction(title: "Отменить", style: .cancel)
+        alert.addAction(deleteAction)
+        alert.addAction(cancel)
+        present(alert, animated: true)
+    }
 }
 
 extension TrackerViewController: UICollectionViewDelegateFlowLayout {
@@ -257,6 +270,34 @@ extension TrackerViewController: UICollectionViewDelegateFlowLayout {
                                                   withHorizontalFittingPriority: .required,
                                                   verticalFittingPriority: .fittingSizeLevel)
     }
+    
+    func collectionView(_ collectionView: UICollectionView, contextMenuConfigurationForItemsAt indexPaths: [IndexPath], point: CGPoint) -> UIContextMenuConfiguration? {
+        guard indexPaths.count > 0 else {
+            return nil
+        }
+        
+        let indexPath = indexPaths[0]
+        
+        return UIContextMenuConfiguration(actionProvider: {action in
+            return UIMenu(children: [
+                UIAction(title:"Закрепить",
+                         handler: { _ in
+                             
+                         }),
+                UIAction(title:"Редактировать",
+                         handler: { _ in
+                             
+                         }),
+                UIAction(title: "Удалить", attributes: .destructive, handler: { [weak self] _ in
+                    guard let self else {return}
+                    self.deleteTracker(at: indexPath)
+                })
+                
+            ])
+        })
+    }
+
+    
 }
 
 extension TrackerViewController: TrackerCellDelegate {
