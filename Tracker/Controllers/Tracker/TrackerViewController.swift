@@ -19,6 +19,8 @@ final class TrackerViewController: UIViewController {
     private let trackerStore = TrackerStore.shared
     private let recordsStore = TrackerRecordStore.shared
     private let categoryStore = TrackerCategoryStore.shared
+    private let analyticService = AnalyticService()
+    
     private lazy var labelEmptyList: UILabel = {
         let view = UILabel()
         view.text = NSLocalizedString("emptyListTrackers", comment: "Title for empty trackers")
@@ -68,6 +70,16 @@ final class TrackerViewController: UIViewController {
         trackerStore.delegate = self
         fetchData()
         configureNavBar()
+    }
+    
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        analyticService.report(event: "open", params: ["screen": "Main"])
+    }
+    
+    override func viewDidDisappear(_ animated: Bool) {
+        super.viewDidDisappear(true)
+        analyticService.report(event: "close", params: ["screen": "Main"])
     }
     
     private func fetchData(){
@@ -145,6 +157,7 @@ final class TrackerViewController: UIViewController {
     }
     
     @objc private func addTracker(){
+        analyticService.report(event: "click", params: ["screen": "Main", "item": "add_track"])
         let vc = CreateTrackerViewController()
         vc.modalPresentationStyle = .formSheet
         vc.delegateAddTracker = self
@@ -278,7 +291,9 @@ extension TrackerViewController: UICollectionViewDelegateFlowLayout {
         
         let indexPath = indexPaths[0]
         
-        return UIContextMenuConfiguration(actionProvider: {action in
+        return UIContextMenuConfiguration(actionProvider: { [weak self] _ in
+            guard let self else {return nil}
+            
             return UIMenu(children: [
                 UIAction(title:"Закрепить",
                          handler: { _ in
@@ -286,23 +301,33 @@ extension TrackerViewController: UICollectionViewDelegateFlowLayout {
                          }),
                 UIAction(title:"Редактировать",
                          handler: { _ in
-                             
+                             self.analyticService.report(event: "click",
+                                                         params: [
+                                                            "screen": "Main",
+                                                            "item": "edit"
+                                                         ])
                          }),
-                UIAction(title: "Удалить", attributes: .destructive, handler: { [weak self] _ in
-                    guard let self else {return}
-                    self.deleteTracker(at: indexPath)
-                })
-                
+                UIAction(title: "Удалить",
+                         attributes: .destructive,
+                         handler: { _ in
+                             self.analyticService.report(event: "click",
+                                                         params: [
+                                                            "screen": "Main",
+                                                            "item": "delete"
+                                                         ])
+                             self.deleteTracker(at: indexPath)
+                         })
             ])
         })
     }
-
+    
     
 }
 
 extension TrackerViewController: TrackerCellDelegate {
     
     func completeTracker(traker: Tracker, indexPath: IndexPath) {
+        analyticService.report(event: "click", params: ["screen": "Main", "item": "track"])
         let currentDate = Date()
         let selectedDate = datePicker.date
         if selectedDate <= currentDate {
@@ -311,7 +336,6 @@ extension TrackerViewController: TrackerCellDelegate {
                 categories = categories.map { category -> TrackerCategory in
                     let filteredTrackers = category.trackers.filter { $0.id != traker.id }
                     return TrackerCategory(title: category.title, trackers: filteredTrackers)
-                    
                 }
                 try? trackerStore.deleteTracker(with: traker.id)
                 filterTrackers()
