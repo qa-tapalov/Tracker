@@ -110,7 +110,6 @@ private extension CategoriesViewController {
     }
     
     private func setupTableView(){
-        view.addSubview(tableView)
         NSLayoutConstraint.activate([
             tableView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 0),
             tableView.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: 0),

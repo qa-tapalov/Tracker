@@ -14,3 +14,4 @@
 "daysManyLabel" = "days";
 "emptyStatistics" = "There is nothing to analyze yet";
 "emptyListTrackers" = "What will we track?";
+"stubLabelFilter" = "Nothing found";
