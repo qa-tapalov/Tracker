@@ -42,20 +42,35 @@ final class TrackerStore: NSObject {
     
     func addTracker(tracker: Tracker, categoryTitle: String) throws{
         let trackerCategory: TrackerCategoryCoreData!
+        let trackerCoreData: TrackerCoreData!
         let fetchRequest: NSFetchRequest<TrackerCategoryCoreData> = TrackerCategoryCoreData.fetchRequest()
         fetchRequest.predicate = NSPredicate(format: "title == %@", categoryTitle)
+        
+        let fetchRequestTracker: NSFetchRequest<TrackerCoreData> = TrackerCoreData.fetchRequest()
+        fetchRequestTracker.predicate = NSPredicate(format: "id == %@", tracker.id as CVarArg)
         
         do {
             let results = try coreDataManager.context.fetch(fetchRequest)
             trackerCategory = results.first
             
-            let trackerEntity = TrackerCoreData(context: coreDataManager.context)
-            trackerEntity.id = tracker.id
-            trackerEntity.name = tracker.name
-            trackerEntity.color = tracker.color
-            trackerEntity.emogi = tracker.emogi
-            trackerEntity.schedule = tracker.schedule as [NSNumber] as NSObject
-            trackerEntity.category = trackerCategory
+            let fetchTracker = try! coreDataManager.context.fetch(fetchRequestTracker)
+            trackerCoreData = fetchTracker.first
+            if !fetchTracker.isEmpty {
+                trackerCoreData.id = tracker.id
+                trackerCoreData.name = tracker.name
+                trackerCoreData.color = tracker.color
+                trackerCoreData.emogi = tracker.emogi
+                trackerCoreData.schedule = tracker.schedule as [NSNumber] as NSObject
+                trackerCoreData.category = trackerCategory
+            } else {
+                let trackerEntity = TrackerCoreData(context: coreDataManager.context)
+                trackerEntity.id = tracker.id
+                trackerEntity.name = tracker.name
+                trackerEntity.color = tracker.color
+                trackerEntity.emogi = tracker.emogi
+                trackerEntity.schedule = tracker.schedule as [NSNumber] as NSObject
+                trackerEntity.category = trackerCategory
+            }
             coreDataManager.saveContext()
         }
         catch let error as NSError {

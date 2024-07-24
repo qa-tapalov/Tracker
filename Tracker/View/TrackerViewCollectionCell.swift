@@ -98,7 +98,7 @@ final class TrackerViewCollectionCell: UICollectionViewCell {
         self.indexPath = indexPath
         self.containerView.backgroundColor = tracker.color
         self.buttonDone.backgroundColor = tracker.color
-        self.daysLabel.text = pluralizeDays(completedDays)
+        self.daysLabel.text = completedDays.pluralizeDays()
         self.titleNameTracker.text = tracker.name
         self.emogiLabel.text = tracker.emogi
         if isCompletedToday {
@@ -187,16 +187,4 @@ final class TrackerViewCollectionCell: UICollectionViewCell {
         }
     }
     
-    private func pluralizeDays(_ count: Int) -> String {
-        let remainder10 = count % 10
-        let remainder100 = count % 100
-        
-        if remainder10 == 1 && remainder100 != 11 {
-            return "\(count) \(NSLocalizedString("dayLabel", comment: "Title for label daysLabel"))"
-        } else if remainder10 >= 2 && remainder10 <= 4 && (remainder100 < 10 || remainder100 >= 20) {
-            return "\(count) \(NSLocalizedString("daysFewLabel", comment: "Title for label daysLabel"))" }
-        else {
-            return "\(count) \(NSLocalizedString("daysManyLabel", comment: "Title for label daysLabel"))"
-        }
-    }
 }

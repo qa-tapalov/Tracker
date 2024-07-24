@@ -61,6 +61,14 @@ extension EmojiCollectionTableViewCell: UICollectionViewDelegateFlowLayout, UICo
         guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: EmogiCollectionViewCell.identifier, for: indexPath) as? EmogiCollectionViewCell else {return UICollectionViewCell()}
         cell.backgroundColor = UIColor(resource: .white)
         cell.titleLabel.text = emogis[indexPath.row]
+        
+        if let indexEmoji = emogis.firstIndex(of: selectedEmoji ?? "") {
+            if indexPath.row == indexEmoji {
+                collectionView.selectItem(at: indexPath, animated: false, scrollPosition: [] )
+                cell.backgroundColor = AppColors.lightGray
+                cell.layer.cornerRadius = 16
+            }
+        }
         return cell
     }
     

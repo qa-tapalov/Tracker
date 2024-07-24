@@ -89,7 +89,7 @@ final class TrackerViewController: UIViewController {
         view.setTitle(NSLocalizedString("FiltersTitle", comment: "Title for filter button"), for: .normal)
         view.titleLabel?.font = UIFont.systemFont(ofSize: 17, weight: .regular)
         view.setTitleColor(UIColor(resource: .white), for: .normal)
-        view.addTarget(self, action: #selector(buttonAction), for: .touchUpInside)
+        view.addTarget(self, action: #selector(actionFilter), for: .touchUpInside)
         return view
     }()
     
@@ -224,7 +224,7 @@ final class TrackerViewController: UIViewController {
         self.present(UINavigationController(rootViewController: vc), animated: true)
     }
     
-    @objc private func buttonAction(){
+    @objc private func actionFilter(){
         analyticService.report(event: "click", params: ["screen": "Main", "item": "filter"])
         let vc = FiltersViewController()
         vc.modalPresentationStyle = .formSheet
@@ -237,24 +237,43 @@ final class TrackerViewController: UIViewController {
         let selectedDate = datePicker.date
         let filterWeekday = Calendar.current.component(.weekday, from: selectedDate)
         let filterText = searchTextField.text?.lowercased() ?? ""
-        filteredCategories = categories.compactMap { category in
-            let trackers = category.trackers.filter { tracker in
-                let textCondition = filterText.isEmpty ||
-                tracker.name.lowercased().contains(filterText)
-                
-                let dateCondition = tracker.schedule.contains { weekDay in
-                    weekDay == filterWeekday
-                } || tracker.schedule.isEmpty
-                
-                return textCondition && dateCondition
-            }
+        
+        switch selectedFilter {
+        case "Завершенные":
+            filteredCategories = categories.map { category in
+                let completedTrackers = category.trackers.filter { tracker in
+                    return isTrackerCompletedToday(id: tracker.id) &&  (tracker.name.lowercased().contains(filterText) || filterText.isEmpty)
+                }
+                return TrackerCategory(title: category.title, trackers: completedTrackers)
+            }.filter {!$0.trackers.isEmpty}
+        case "Не завершенные":
+            filteredCategories = categories.map { category in
+                let completedTrackers = category.trackers.filter { tracker in
+                    return (!isTrackerCompletedToday(id: tracker.id) && (isTrackerScheduledForToday(tracker: tracker) || tracker.schedule.isEmpty)) && (tracker.name.lowercased().contains(filterText) || filterText.isEmpty)
+                }
+                return TrackerCategory(title: category.title, trackers: completedTrackers)
+            }.filter {!$0.trackers.isEmpty}
             
-            if trackers.isEmpty {
-                return nil
+        default:
+            filteredCategories = categories.compactMap { category in
+                let trackers = category.trackers.filter { tracker in
+                    let textCondition = filterText.isEmpty ||
+                    tracker.name.lowercased().contains(filterText)
+                    
+                    let dateCondition = tracker.schedule.contains { weekDay in
+                        weekDay == filterWeekday
+                    } || tracker.schedule.isEmpty
+                    
+                    return textCondition && dateCondition
+                }
+                
+                if trackers.isEmpty {
+                    return nil
+                }
+                
+                return TrackerCategory(title: category.title,
+                                       trackers: trackers)
             }
-            
-            return TrackerCategory(title: category.title,
-                                   trackers: trackers)
         }
         updateView()
     }
@@ -275,6 +294,23 @@ final class TrackerViewController: UIViewController {
             collectionView.isHidden = false
             buttonFilter.isHidden = false
         }
+        collectionView.reloadData()
+    }
+    
+    func editTracker(at indexPath: IndexPath) {
+        let vc = CreateNewTrackerViewController()
+        vc.delegateAddTracker = self
+        let tracker = self.filteredCategories[indexPath.section].trackers[indexPath.row]
+        vc.selectedCategory = self.filteredCategories[indexPath.section].title
+        if tracker.schedule.isEmpty {
+            vc.typeTracker = "Event"
+        }
+        let completedDays = completedTrackers.filter {$0.trackerId == tracker.id}.count
+        vc.daysCount = completedDays
+        vc.isEditTracker = true
+        vc.createTracker(tracker: tracker)
+        vc.modalPresentationStyle = .formSheet
+        present(UINavigationController(rootViewController: vc), animated: true)
     }
 }
 
@@ -305,6 +341,12 @@ extension TrackerViewController: UICollectionViewDataSource {
             let isSameDay = Calendar.current.isDate(trackerRecord.date, inSameDayAs: datePicker.date)
             return trackerRecord.trackerId == id && isSameDay
         }
+    }
+    
+    private func isTrackerScheduledForToday(tracker: Tracker) -> Bool {
+        let selectedDate = datePicker.date
+        let filterWeekday = Calendar.current.component(.weekday, from: selectedDate)
+        return tracker.schedule.contains(filterWeekday)
     }
     
     func deleteTracker(at indexPath: IndexPath) {
@@ -384,6 +426,7 @@ extension TrackerViewController: UICollectionViewDelegateFlowLayout {
                                                             "screen": "Main",
                                                             "item": "edit"
                                                          ])
+                             self.editTracker(at: indexPath)
                          }),
                 UIAction(title: "Удалить",
                          attributes: .destructive,
@@ -461,7 +504,6 @@ extension TrackerViewController: UITextFieldDelegate {
     func textFieldShouldReturn(_ textField: UITextField) -> Bool {
         textField.resignFirstResponder()
         filterTrackers()
-        collectionView.reloadData()
         return true
     }
     
@@ -478,43 +520,41 @@ extension TrackerViewController: SelectFilterDelegate {
     func didSelectedFilter(filter: Filters) {
         
         selectedFilter = filter.rawValue
-        fetchData()
+        categories = categoryStore.category
         switch filter {
             
         case .all:
             filterTrackers()
+            
         case .forToday:
             datePicker.date = Date()
             filterTrackers()
+            
         case .completed:
             filteredCategories = categories.map { category in
                 let completedTrackers = category.trackers.filter { tracker in
-                    return isTrackerCompletedOnDate(tracker: tracker, date: datePicker.date)
+                    return isTrackerCompletedToday(id: tracker.id)
                 }
                 return TrackerCategory(title: category.title, trackers: completedTrackers)
-            }.filter { !$0.trackers.isEmpty }
+            }.filter {!$0.trackers.isEmpty}
             collectionView.reloadData()
+            
         case .notCompleted:
             filteredCategories = categories.map { category in
                 let completedTrackers = category.trackers.filter { tracker in
-                    return !isTrackerCompletedOnDate(tracker: tracker, date: datePicker.date)
+                    return !isTrackerCompletedToday(id: tracker.id) && (isTrackerScheduledForToday(tracker: tracker) || tracker.schedule.isEmpty)
                 }
                 return TrackerCategory(title: category.title, trackers: completedTrackers)
-            }.filter { !$0.trackers.isEmpty }
-            collectionView.reloadData()
+            }.filter {!$0.trackers.isEmpty}
+            
         }
         
-        if categories.isEmpty {
+        if filteredCategories.isEmpty {
             showPlaceholder()
         } else {
             hidePlaceholder()
         }
-    }
-    
-    private func isTrackerCompletedOnDate(tracker: Tracker, date: Date) -> Bool {
-        return completedTrackers.contains { record in
-            record.trackerId == tracker.id && Calendar.current.isDate(record.date, inSameDayAs: date)
-        }
+        collectionView.reloadData()
     }
     
 }
