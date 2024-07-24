@@ -75,6 +75,7 @@ final class TrackerViewCollectionCell: UICollectionViewCell {
     static let reuseIdentifier = "TrackerCollectionViewCell"
     weak var delegate: TrackerCellDelegate?
     private var isCompletedToday: Bool = false
+    private var isPinned: Bool = false
     private var tracker: Tracker?
     private var indexPath: IndexPath?
     
@@ -91,6 +92,7 @@ final class TrackerViewCollectionCell: UICollectionViewCell {
         tracker: Tracker,
         isCompletedToday: Bool,
         completedDays: Int,
+        isPinned: Bool,
         indexPath: IndexPath
     ) {
         self.tracker = tracker
@@ -106,6 +108,11 @@ final class TrackerViewCollectionCell: UICollectionViewCell {
             self.buttonDone.backgroundColor = tracker.color.withAlphaComponent(0.3)
         } else {
             self.buttonDone.setImage(UIImage(systemName: "plus"), for: .normal)
+        }
+        if isPinned {
+            buttonPin.isHidden = false
+        } else {
+            buttonPin.isHidden = true
         }
     }
     

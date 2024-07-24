@@ -25,6 +25,8 @@ final class TrackerViewController: UIViewController {
     private let categoryStore = TrackerCategoryStore.shared
     private let analyticService = AnalyticService()
     private var selectedFilter = "Все трекеры"
+    private var savedCategories: [UUID: String] = [:]
+    
     private lazy var labelEmptyList: UILabel = {
         let view = UILabel()
         view.text = NSLocalizedString("emptyListTrackers", comment: "Title for empty trackers")
@@ -47,6 +49,7 @@ final class TrackerViewController: UIViewController {
         view.locale = Locale(identifier: "ru_Ru")
         view.addTarget(self, action: #selector(dateValueChanged), for: .valueChanged)
         view.date = Calendar.current.startOfDay(for: Date())
+        view.maximumDate = Date()
         return view
     }()
     
@@ -117,6 +120,10 @@ final class TrackerViewController: UIViewController {
     
     private func fetchData(){
         categories = categoryStore.category
+        if let index = categories.firstIndex(where: {$0.title == "Закрепленные"}){
+            let category = categories.remove(at: index)
+            categories.insert(category, at: 0)
+        }
         completedTrackers = recordsStore.fetchTrackerRecords()
         dateValueChanged()
     }
@@ -151,6 +158,7 @@ final class TrackerViewController: UIViewController {
     }
     
     private func setupCollection(){
+        collectionView.backgroundColor = UIColor(resource: .white)
         collectionView.dataSource = self
         collectionView.delegate = self
         collectionView.allowsMultipleSelection = false
@@ -212,8 +220,7 @@ final class TrackerViewController: UIViewController {
     
     @objc private func dateValueChanged(){
         filterTrackers()
-        updateView()
-        collectionView.reloadData()
+        presentedViewController?.dismiss(animated: false)
     }
     
     @objc private func addTracker(){
@@ -312,28 +319,11 @@ final class TrackerViewController: UIViewController {
         vc.modalPresentationStyle = .formSheet
         present(UINavigationController(rootViewController: vc), animated: true)
     }
-}
-
-extension TrackerViewController: UICollectionViewDataSource {
     
-    func numberOfSections(in collectionView: UICollectionView) -> Int {
-        return filteredCategories.count
-    }
-    
-    func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        return filteredCategories[section].trackers.count
-    }
-    
-    func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
-        guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: TrackerViewCollectionCell.reuseIdentifier, for: indexPath) as? TrackerViewCollectionCell else { return UICollectionViewCell() }
-        cell.prepareForReuse()
-        let tracker = filteredCategories[indexPath.section].trackers[indexPath.row]
-        cell.delegate = self
-        let isCompletedToday = isTrackerCompletedToday(id: tracker.id)
-        let completedDays = completedTrackers.filter {$0.trackerId == tracker.id}.count
-        cell.configure(tracker: tracker, isCompletedToday: isCompletedToday, completedDays: completedDays, indexPath: indexPath)
-        
-        return cell
+    private func isTrackerPinned(tracker: Tracker) -> Bool {
+        filteredCategories.contains {category in
+            category.title == "Закрепленные" && category.trackers.contains {trackerId in
+                trackerId.id == tracker.id}}
     }
     
     private func isTrackerCompletedToday(id: UUID) -> Bool {
@@ -362,6 +352,52 @@ extension TrackerViewController: UICollectionViewDataSource {
         alert.addAction(cancel)
         present(alert, animated: true)
     }
+    
+    private func pinTracker(indexPath: IndexPath){
+        try? categoryStore.addCategory(category: TrackerCategory(title: "Закрепленные", trackers: []))
+        let tracker = filteredCategories[indexPath.section].trackers[indexPath.row]
+        let category = filteredCategories[indexPath.section].title
+        savedCategories[tracker.id] = category
+        try? trackerStore.deleteTracker(with: tracker.id)
+        try? trackerStore.addTracker(tracker: tracker, categoryTitle: "Закрепленные")
+        fetchData()
+    }
+    
+    private func unpinTracker(indexPath: IndexPath){
+        let tracker = filteredCategories[indexPath.section].trackers[indexPath.row]
+        if let category = savedCategories[tracker.id] {
+            try? trackerStore.deleteTracker(with: tracker.id)
+            try? trackerStore.addTracker(tracker: tracker, categoryTitle: category)
+        }
+        savedCategories.removeValue(forKey: tracker.id)
+        fetchData()
+    }
+    
+}
+
+extension TrackerViewController: UICollectionViewDataSource {
+    
+    func numberOfSections(in collectionView: UICollectionView) -> Int {
+        return filteredCategories.count
+    }
+    
+    func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
+        return filteredCategories[section].trackers.count
+    }
+    
+    func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
+        guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: TrackerViewCollectionCell.reuseIdentifier, for: indexPath) as? TrackerViewCollectionCell else { return UICollectionViewCell() }
+        cell.prepareForReuse()
+        let tracker = filteredCategories[indexPath.section].trackers[indexPath.row]
+        cell.delegate = self
+        let isCompletedToday = isTrackerCompletedToday(id: tracker.id)
+        let isPinned = isTrackerPinned(tracker: tracker)
+        let completedDays = completedTrackers.filter {$0.trackerId == tracker.id}.count
+        cell.configure(tracker: tracker, isCompletedToday: isCompletedToday, completedDays: completedDays, isPinned: isPinned, indexPath: indexPath)
+        
+        return cell
+    }
+    
 }
 
 extension TrackerViewController: UICollectionViewDelegateFlowLayout {
@@ -410,14 +446,15 @@ extension TrackerViewController: UICollectionViewDelegateFlowLayout {
         }
         
         let indexPath = indexPaths[0]
-        
+        let tracker = filteredCategories[indexPath.section].trackers[indexPath.row]
+        let isPinned = isTrackerPinned(tracker: tracker)
         return UIContextMenuConfiguration(actionProvider: { [weak self] _ in
             guard let self else {return nil}
             
             return UIMenu(children: [
-                UIAction(title:"Закрепить",
+                UIAction(title: isPinned ? "Открепить" : "Закрепить",
                          handler: { _ in
-                             
+                             isPinned ? self.unpinTracker(indexPath: indexPath) :   self.pinTracker(indexPath: indexPath)
                          }),
                 UIAction(title:"Редактировать",
                          handler: { _ in
