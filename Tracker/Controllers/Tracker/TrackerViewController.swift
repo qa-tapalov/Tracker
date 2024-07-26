@@ -286,21 +286,20 @@ final class TrackerViewController: UIViewController {
     }
     
     func updateView(){
-        if filteredCategories.isEmpty {
-            collectionView.isHidden = true
-            buttonFilter.isHidden = true
-            stubImage.isHidden = false
-            labelEmptyList.isHidden = false
-            stubImageFilter.isHidden = true
-            stubLabelFilter.isHidden = true
-        } else {
-            stubImage.isHidden = true
-            labelEmptyList.isHidden = true
-            stubImageFilter.isHidden = true
-            stubLabelFilter.isHidden = true
-            collectionView.isHidden = false
-            buttonFilter.isHidden = false
-        }
+        let isCategoriesEmpty = categories.isEmpty
+        let isFilteredCategoriesEmpty = filteredCategories.isEmpty
+        let isSearchTextEmpty = searchTextField.text?.isEmpty ?? true
+        
+        let showEmptyState = isCategoriesEmpty || (isFilteredCategoriesEmpty && isSearchTextEmpty)
+        let showFilterEmptyState = isFilteredCategoriesEmpty && !isSearchTextEmpty
+        
+        collectionView.isHidden = showEmptyState || showFilterEmptyState
+        buttonFilter.isHidden = showEmptyState || showFilterEmptyState
+        stubImage.isHidden = !showEmptyState
+        labelEmptyList.isHidden = !showEmptyState
+        stubImageFilter.isHidden = !showFilterEmptyState
+        stubLabelFilter.isHidden = !showFilterEmptyState
+        
         collectionView.reloadData()
     }
     

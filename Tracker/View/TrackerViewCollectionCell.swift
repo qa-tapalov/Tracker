@@ -109,11 +109,7 @@ final class TrackerViewCollectionCell: UICollectionViewCell {
         } else {
             self.buttonDone.setImage(UIImage(systemName: "plus"), for: .normal)
         }
-        if isPinned {
-            buttonPin.isHidden = false
-        } else {
-            buttonPin.isHidden = true
-        }
+        buttonPin.isHidden = !isPinned
     }
     
     private func setup(){

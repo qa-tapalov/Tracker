@@ -93,17 +93,11 @@ private extension StatisticViewController {
 
 extension StatisticViewController: UITableViewDataSource {
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        if completedTrackers.isEmpty {
-            stubImage.isHidden = false
-            labelEmptyList.isHidden = false
-            tableView.isHidden = true
-            return 0
-        } else {
-            stubImage.isHidden = true
-            labelEmptyList.isHidden = true
-            tableView.isHidden = false
-            return 1
-        }
+        stubImage.isHidden = !completedTrackers.isEmpty
+        labelEmptyList.isHidden = !completedTrackers.isEmpty
+        tableView.isHidden = completedTrackers.isEmpty
+
+        return completedTrackers.isEmpty ? 0 : 1
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {

@@ -433,6 +433,6 @@ protocol SaveScheduleDelegate: AnyObject {
 extension CreateNewTrackerViewController: SelectCategoryDelegate {
     func didSelectCategory(_ categoryTitle: String) {
         self.selectedCategory = categoryTitle
-        tableView.reloadData()
+        tableView.reloadRows(at: [IndexPath(row: 0, section: 1)], with: .automatic)
     }
 }
