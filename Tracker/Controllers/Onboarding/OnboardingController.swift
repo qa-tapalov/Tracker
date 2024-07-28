@@ -12,17 +12,17 @@ final class OnboardingController: UIPageViewController {
     private lazy var pageControl: UIPageControl = {
         let pageControl = UIPageControl()
         pageControl.translatesAutoresizingMaskIntoConstraints = false
-        pageControl.currentPageIndicatorTintColor = AppColors.blackDay
-        pageControl.pageIndicatorTintColor = AppColors.blackDay.withAlphaComponent(0.3)
+        pageControl.currentPageIndicatorTintColor = UIColor(resource: .black)
+        pageControl.pageIndicatorTintColor = UIColor(resource: .black).withAlphaComponent(0.3)
         return pageControl
     }()
     
     private lazy var button: UIButton = {
         let button = UIButton(type: .system)
         button.translatesAutoresizingMaskIntoConstraints = false
-        button.backgroundColor = AppColors.blackDay
+        button.backgroundColor = UIColor(resource: .black)
         button.layer.cornerRadius = 16
-        button.setTitleColor(AppColors.whiteDay, for: .normal)
+        button.setTitleColor(UIColor(resource: .white), for: .normal)
         button.titleLabel?.font = UIFont.systemFont(ofSize: 16, weight: .medium)
         button.setTitle("Вот это технологии!", for: .normal)
         button.addTarget(self, action: #selector(actionButton), for: .touchUpInside)
@@ -97,7 +97,7 @@ extension OnboardingController {
         label.text = labelText
         label.textAlignment = .center
         label.numberOfLines = 2
-        label.textColor = AppColors.blackDay
+        label.textColor = UIColor(resource: .black)
         label.font = UIFont.systemFont(ofSize: 32, weight: .bold)
         label.translatesAutoresizingMaskIntoConstraints = false
         vc.view.addSubview(label)

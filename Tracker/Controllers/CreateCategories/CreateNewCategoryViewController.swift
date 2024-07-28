@@ -18,7 +18,7 @@ final class CreateNewCategoryViewController: UIViewController {
         view.translatesAutoresizingMaskIntoConstraints = false
         view.borderStyle = .roundedRect
         view.attributedPlaceholder = NSAttributedString(string: "Введите название категории", attributes: [NSAttributedString.Key.foregroundColor: AppColors.gray,NSAttributedString.Key.font: UIFont.systemFont(ofSize: 17, weight: .regular)])
-        view.textColor = AppColors.blackDay
+        view.textColor = UIColor(resource: .black)
         view.backgroundColor = AppColors.lightGray.withAlphaComponent(0.3)
         view.layer.cornerRadius = 16
         view.layer.masksToBounds = true
@@ -31,7 +31,7 @@ final class CreateNewCategoryViewController: UIViewController {
     private lazy var button: UIButton = {
         let view = UIButton()
         view.translatesAutoresizingMaskIntoConstraints = false
-        view.backgroundColor = AppColors.blackDay
+        view.backgroundColor = UIColor(resource: .black)
         view.layer.cornerRadius = 16
         view.setTitle("Готово", for: .normal)
         view.titleLabel?.font = UIFont.systemFont(ofSize: 16, weight: .medium)
@@ -50,7 +50,7 @@ final class CreateNewCategoryViewController: UIViewController {
     @objc func textFieldChanged() {
         guard let text = textField.text else {return}
         if text.count >= 1 {
-            button.backgroundColor = AppColors.blackDay
+            button.backgroundColor = UIColor(resource: .black)
             button.isEnabled = true
         } else {
             button.backgroundColor = AppColors.gray
@@ -70,7 +70,7 @@ private extension CreateNewCategoryViewController {
     
     private func setupView(){
         title = "Новая категория"
-        view.backgroundColor = AppColors.whiteDay
+        view.backgroundColor = UIColor(resource: .white)
         view.addSubview(textField)
         view.addSubview(button)
         textField.delegate = self

@@ -33,11 +33,11 @@ final class CategoriesViewController: UIViewController {
     private lazy var button: UIButton = {
         let view = UIButton()
         view.translatesAutoresizingMaskIntoConstraints = false
-        view.backgroundColor = AppColors.blackDay
+        view.backgroundColor = UIColor(resource: .black)
         view.layer.cornerRadius = 16
         view.setTitle("Добавить категорию", for: .normal)
         view.titleLabel?.font = UIFont.systemFont(ofSize: 16, weight: .medium)
-        view.titleLabel?.textColor = AppColors.whiteDay
+        view.setTitleColor(UIColor(resource: .white), for: .normal)
         view.addTarget(self, action: #selector(buttonAction), for: .touchUpInside)
         return view
     }()
@@ -47,7 +47,7 @@ final class CategoriesViewController: UIViewController {
         view.translatesAutoresizingMaskIntoConstraints = false
         view.dataSource = self
         view.delegate = self
-        view.backgroundColor = AppColors.whiteDay
+        view.backgroundColor = UIColor(resource: .white)
         view.separatorColor = AppColors.gray
         view.contentInset = UIEdgeInsets(top: 0, left: 0, bottom: 0, right: 0)
         view.keyboardDismissMode = .onDrag
@@ -77,7 +77,7 @@ final class CategoriesViewController: UIViewController {
     
     @objc private func buttonAction(){
         let vc = CreateNewCategoryViewController()
-        vc.modalPresentationStyle = .pageSheet
+        vc.modalPresentationStyle = .formSheet
         vc.delegate = self
         self.present(UINavigationController(rootViewController:vc), animated: true)
     }
@@ -97,7 +97,7 @@ private extension CategoriesViewController {
     
     private func setupView(){
         title = "Категория"
-        view.backgroundColor = AppColors.whiteDay
+        view.backgroundColor = UIColor(resource: .white)
         view.addSubview(button)
         view.addSubview(stubImage)
         view.addSubview(labelEmptyList)
@@ -110,7 +110,6 @@ private extension CategoriesViewController {
     }
     
     private func setupTableView(){
-        view.addSubview(tableView)
         NSLayoutConstraint.activate([
             tableView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 0),
             tableView.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: 0),
@@ -152,6 +151,29 @@ extension CategoriesViewController: UITableViewDelegate {
         tableView.reloadData()
         delegate?.didSelectCategory(selectedCategory)
         dismiss(animated: true)
+    }
+    
+    func tableView(_ tableView: UITableView, contextMenuConfigurationForRowAt indexPath: IndexPath, point: CGPoint) -> UIContextMenuConfiguration? {
+        guard indexPath.count > 0 else {
+            return nil
+        }
+        
+        let category = cellDataSource[indexPath.row]
+        
+        return UIContextMenuConfiguration(actionProvider: {action in
+            return UIMenu(children: [
+                UIAction(title: "Удалить", attributes: .destructive, handler: { [weak self] _ in
+                    let alert = UIAlertController(title: "Эта категория точно не нужна?", message: nil, preferredStyle: .actionSheet)
+                    let deleteAction = UIAlertAction(title: "Удалить", style: .destructive) { _ in
+                        try? self?.viewModel?.deleteCategory(category: category)
+                    }
+                    let cancel = UIAlertAction(title: "Отменить", style: .cancel)
+                    alert.addAction(deleteAction)
+                    alert.addAction(cancel)
+                    self?.present(alert, animated: true)
+                })
+            ])
+        })
     }
 }
 //MARK: - UITableViewDataSource

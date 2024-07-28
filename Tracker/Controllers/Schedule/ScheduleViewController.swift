@@ -29,7 +29,9 @@ final class ScheduleViewController: UIViewController {
         let view = UIButton()
         view.translatesAutoresizingMaskIntoConstraints = false
         view.setTitle("Готово", for: .normal)
-        view.backgroundColor = AppColors.blackDay
+        view.titleLabel?.font = UIFont.systemFont(ofSize: 16, weight: .medium)
+        view.setTitleColor(UIColor(resource: .white), for: .normal)
+        view.backgroundColor = UIColor(resource: .black)
         view.layer.cornerRadius = 16
         view.layer.masksToBounds = true
         view.addTarget(self, action: #selector(saveSchedule), for: .touchUpInside)
@@ -39,7 +41,7 @@ final class ScheduleViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         title = "Расписание"
-        view.backgroundColor = AppColors.whiteDay
+        view.backgroundColor = UIColor(resource: .white)
         setupView()
     }
     
@@ -54,7 +56,7 @@ final class ScheduleViewController: UIViewController {
         tableView.delegate = self
         tableView.dataSource = self
         tableView.translatesAutoresizingMaskIntoConstraints = false
-        tableView.backgroundColor = AppColors.whiteDay
+        tableView.backgroundColor = UIColor(resource: .white)
         tableView.separatorColor = AppColors.gray
         tableView.contentInset = UIEdgeInsets(top: 0, left: 0, bottom: 0, right: 0)
         tableView.register(ScheduleTableViewCell.self, forCellReuseIdentifier: ScheduleTableViewCell.scheduleCell)

@@ -60,8 +60,18 @@ extension ColorsCollectionTableViewCell: UICollectionViewDelegateFlowLayout, UIC
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: ColorCollectionViewCell.identifier, for: indexPath) as? ColorCollectionViewCell else {return UICollectionViewCell()}
         cell.viewColor.backgroundColor = colors[indexPath.row]
+        
+        if let index = colors.firstIndex(of: selectedColor ?? .background) {
+            if indexPath.row == index {
+                collectionView.selectItem(at: indexPath, animated: false, scrollPosition: [] )
+                cell.layer.borderColor = colors[indexPath.row].cgColor
+                cell.layer.borderWidth = 3
+                cell.layer.cornerRadius = 8
+            }
+        }
         return cell
     }
+    
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
         let cell = collectionView.cellForItem(at: indexPath)
         cell?.layer.borderColor = colors[indexPath.row].cgColor

@@ -13,7 +13,7 @@ final class CategoryTableViewCell: UITableViewCell {
     private lazy var title: UILabel = {
         let view = UILabel()
         view.translatesAutoresizingMaskIntoConstraints = false
-        view.textColor = AppColors.blackDay
+        view.textColor = UIColor(resource: .black)
         view.font = UIFont.systemFont(ofSize: 17, weight: .regular)
         return view
     }()

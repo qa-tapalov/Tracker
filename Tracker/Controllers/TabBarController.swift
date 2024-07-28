@@ -15,14 +15,14 @@ final class TabBarController: UITabBarController {
     }
     
     private func configureTabBar(){
-        tabBar.backgroundColor = AppColors.whiteDay
+        tabBar.backgroundColor = UIColor(resource: .white)
         
         let vc1 = UINavigationController(rootViewController: TrackerViewController())
         let vc2 = UINavigationController(rootViewController: StatisticViewController())
         vc1.tabBarItem.image = UIImage(resource: .trackerListTabBar)
         vc2.tabBarItem.image = UIImage(resource: .statisticsTabBar)
-        vc1.title = "Трекеры"
-        vc2.title = "Статистика"
+        vc1.title = NSLocalizedString("TrackersTitle", comment: "Title for trackers tab")
+        vc2.title = NSLocalizedString("StatisticsTitle", comment: "Title for statistic tab")
         
         let lineView = UIView(frame: CGRect(x: 0,
                                             y: 0,

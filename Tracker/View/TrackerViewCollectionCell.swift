@@ -26,7 +26,7 @@ final class TrackerViewCollectionCell: UICollectionViewCell {
     lazy var titleNameTracker: UILabel = {
         let view = UILabel()
         view.numberOfLines = 2
-        view.textColor = AppColors.whiteDay
+        view.textColor = UIColor(resource: .white)
         view.font = UIFont.systemFont(ofSize: 12, weight: .medium)
         view.translatesAutoresizingMaskIntoConstraints = false
         return view
@@ -66,7 +66,7 @@ final class TrackerViewCollectionCell: UICollectionViewCell {
     lazy var buttonPin: UIButton = {
         let view = UIButton()
         view.setImage(UIImage(systemName: "pin.fill"), for: .normal)
-        view.tintColor = AppColors.whiteDay
+        view.tintColor = UIColor(resource: .white)
         view.translatesAutoresizingMaskIntoConstraints = false
         view.isHidden = true
         return view
@@ -75,6 +75,7 @@ final class TrackerViewCollectionCell: UICollectionViewCell {
     static let reuseIdentifier = "TrackerCollectionViewCell"
     weak var delegate: TrackerCellDelegate?
     private var isCompletedToday: Bool = false
+    private var isPinned: Bool = false
     private var tracker: Tracker?
     private var indexPath: IndexPath?
     
@@ -91,6 +92,7 @@ final class TrackerViewCollectionCell: UICollectionViewCell {
         tracker: Tracker,
         isCompletedToday: Bool,
         completedDays: Int,
+        isPinned: Bool,
         indexPath: IndexPath
     ) {
         self.tracker = tracker
@@ -98,7 +100,7 @@ final class TrackerViewCollectionCell: UICollectionViewCell {
         self.indexPath = indexPath
         self.containerView.backgroundColor = tracker.color
         self.buttonDone.backgroundColor = tracker.color
-        self.daysLabel.text = pluralizeDays(completedDays)
+        self.daysLabel.text = completedDays.pluralizeDays()
         self.titleNameTracker.text = tracker.name
         self.emogiLabel.text = tracker.emogi
         if isCompletedToday {
@@ -107,9 +109,11 @@ final class TrackerViewCollectionCell: UICollectionViewCell {
         } else {
             self.buttonDone.setImage(UIImage(systemName: "plus"), for: .normal)
         }
+        buttonPin.isHidden = !isPinned
     }
     
     private func setup(){
+        self.layer.cornerRadius = 16
         contentView.addSubview(containerView)
         containerView.addSubview(emogiLabel)
         containerView.addSubview(titleNameTracker)
@@ -186,16 +190,4 @@ final class TrackerViewCollectionCell: UICollectionViewCell {
         }
     }
     
-    private func pluralizeDays(_ count: Int) -> String {
-        let remainder10 = count % 10
-        let remainder100 = count % 100
-        
-        if remainder10 == 1 && remainder100 != 11 {
-            return "\(count) день"
-        } else if remainder10 >= 2 && remainder10 <= 4 && (remainder100 < 10 || remainder100 >= 20) {
-            return "\(count) дня" }
-        else {
-            return "\(count) дней"
-        }
-    }
 }

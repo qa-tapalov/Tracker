@@ -16,7 +16,7 @@ enum Section {
     var heightForSection: CGFloat {
         switch self {
         case .textField, .detail: 75
-        case .emogi, .colors: 204
+        case .emogi, .colors: 180
         }
     }
     
@@ -38,19 +38,24 @@ final class CreateNewTrackerViewController: UIViewController {
     weak var delegateAddTracker: AddTrackerDelegate?
     
     private let nameOptionCell = ["Категория","Расписание"]
-    private var typeTracker: String?
-    private var selectedDay = [WeekDay]() {
+    var typeTracker: String?
+    var selectedDay = [WeekDay]() {
         didSet {
             updateDoneButtonState()
         }
     }
     
-    private var selectedCategory = "" {
+    var selectedCategory = "" {
         didSet {
             updateDoneButtonState()
         }
     }
-    
+    var daysCount: Int?
+    var isEditTracker: Bool = false
+    var trackerName: String?
+    var trackerId: UUID?
+    private var selectedColor: UIColor?
+    private var selectedEmoji: String?
     private let trackerStore = TrackerStore.shared
     private let categoryStore = TrackerCategoryStore.shared
     
@@ -66,7 +71,7 @@ final class CreateNewTrackerViewController: UIViewController {
         view.translatesAutoresizingMaskIntoConstraints = false
         view.dataSource = self
         view.delegate = self
-        view.backgroundColor = AppColors.whiteDay
+        view.backgroundColor = UIColor(resource: .white)
         view.separatorColor = AppColors.gray
         view.contentInset = UIEdgeInsets(top: 0, left: 0, bottom: 0, right: 0)
         view.keyboardDismissMode = .onDrag
@@ -96,7 +101,7 @@ final class CreateNewTrackerViewController: UIViewController {
         view.layer.borderColor = AppColors.redBase.cgColor
         view.layer.cornerRadius = 16
         view.layer.masksToBounds = true
-        view.backgroundColor = AppColors.whiteDay
+        view.backgroundColor = UIColor(resource: .white)
         view.setTitleColor(AppColors.redBase, for: .normal)
         view.addTarget(self, action: #selector(tapButtonCancel), for: .touchUpInside)
         return view
@@ -109,7 +114,7 @@ final class CreateNewTrackerViewController: UIViewController {
         view.titleLabel?.font = UIFont.systemFont(ofSize: 16, weight: .medium)
         view.layer.cornerRadius = 16
         view.layer.masksToBounds = true
-        view.setTitleColor(AppColors.whiteDay, for: .normal)
+        view.setTitleColor(UIColor(resource: .white), for: .normal)
         view.backgroundColor = AppColors.gray
         view.addTarget(self, action: #selector(saveTracker), for: .touchUpInside)
         view.isEnabled = false
@@ -118,8 +123,12 @@ final class CreateNewTrackerViewController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        view.backgroundColor = AppColors.whiteDay
-        title = "Новая привычка"
+        view.backgroundColor = UIColor(resource: .white)
+        if isEditTracker {
+            title = "Редактирование привычки"
+        } else {
+            title = "Новая привычка"
+        }
         setupStack()
         setupButtonCancel()
         setupButtonCreate()
@@ -128,6 +137,11 @@ final class CreateNewTrackerViewController: UIViewController {
     
     private func setupTableView(){
         view.addSubview(tableView)
+        if isEditTracker {
+            let headerView = HeaderUIView(frame: CGRect(x: 0, y: 0, width: view.bounds.width, height: 50))
+            headerView.label.text = daysCount?.pluralizeDays()
+            tableView.tableHeaderView = headerView
+        }
         NSLayoutConstraint.activate([
             tableView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 0),
             tableView.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: 0),
@@ -173,7 +187,7 @@ final class CreateNewTrackerViewController: UIViewController {
         let emoji = cellEmoji?.selectedEmoji ?? "😱"
         let color = cellColors?.selectedColor ?? UIColor.gray
         
-        let tracker = Tracker(id: UUID(),
+        let tracker = Tracker(id: trackerId ?? UUID(),
                               name: name,
                               color: color,
                               emogi: emoji,
@@ -186,9 +200,13 @@ final class CreateNewTrackerViewController: UIViewController {
     @objc func textFieldChanged() {
         let cell = tableView.cellForRow(at: IndexPath(row: 0, section: 0)) as? TextFieldTableViewCell
         guard let text = cell?.textField.text else {return}
-        if text.count >= 1 {
+        if text.count >= 3 {
             updateDoneButtonState()
-        }}
+        }
+        if isEditTracker {
+            trackerName = cell?.textField.text
+        }
+    }
     
     var scheduleText: String? {
         
@@ -233,6 +251,9 @@ extension CreateNewTrackerViewController: UITableViewDataSource, UITableViewDele
             guard let cell = tableView.dequeueReusableCell(withIdentifier: TextFieldTableViewCell.textFieldIdentifier, for: indexPath) as? TextFieldTableViewCell else {return UITableViewCell()}
             cell.textField.delegate = self
             cell.textField.addTarget(self, action: #selector(textFieldChanged), for: .editingChanged)
+            if isEditTracker {
+                cell.textField.text = trackerName
+            }
             return cell
             
         case .detail:
@@ -241,7 +262,7 @@ extension CreateNewTrackerViewController: UITableViewDataSource, UITableViewDele
             cell.title.text = nameOptionCell[indexPath.row]
             
             switch indexPath.row {
-            case 0: 
+            case 0:
                 if selectedCategory != "" {
                     cell.addSubTitles()
                     cell.subTitle.text = selectedCategory
@@ -259,11 +280,13 @@ extension CreateNewTrackerViewController: UITableViewDataSource, UITableViewDele
         case .emogi:
             guard let cell = tableView.dequeueReusableCell(withIdentifier: EmojiCollectionTableViewCell.identifire, for: indexPath) as? EmojiCollectionTableViewCell else {return UITableViewCell()}
             cell.delegate = self
+            cell.selectedEmoji = selectedEmoji
             return cell
             
         case .colors:
             guard let cell = tableView.dequeueReusableCell(withIdentifier: ColorsCollectionTableViewCell.identifire, for: indexPath) as? ColorsCollectionTableViewCell else {return UITableViewCell()}
             cell.delegate = self
+            cell.selectedColor = selectedColor
             return cell
         }
     }
@@ -331,7 +354,7 @@ extension CreateNewTrackerViewController: UITableViewDataSource, UITableViewDele
     func tableView(_ tableView: UITableView, willDisplayHeaderView view: UIView, forSection section: Int) {
         let header = view as? UITableViewHeaderFooterView
         header?.textLabel?.font = UIFont.systemFont(ofSize: 19, weight: .bold)
-        header?.textLabel?.textColor = AppColors.blackDay
+        header?.textLabel?.textColor = UIColor(resource: .black)
         header?.textLabel?.text = header?.textLabel?.text?.capitalizeFirstLetter()
     }
 }
@@ -370,7 +393,7 @@ extension CreateNewTrackerViewController: CellCountDelegate, CellSelectedDelegat
         typeTracker == nil ? (isScheduleSelected = !selectedDay.isEmpty) : (isScheduleSelected = true)
         let isCategorySelected = selectedCategory != ""
         if isTextFieldFilled && isEmojiSelected && isColorSelected && isScheduleSelected && isCategorySelected{
-            buttonCreate.backgroundColor = AppColors.blackDay
+            buttonCreate.backgroundColor = UIColor(resource: .black)
             buttonCreate.isEnabled = true
         } else {
             buttonCreate.backgroundColor = AppColors.gray
@@ -378,6 +401,25 @@ extension CreateNewTrackerViewController: CellCountDelegate, CellSelectedDelegat
         }
     }
     
+    func createTracker(tracker: Tracker){
+        trackerName = tracker.name
+        trackerId = tracker.id
+        selectedEmoji = tracker.emogi
+        selectedColor = tracker.color
+        for weekday in tracker.schedule {
+            switch weekday {
+            case 1: selectedDay.append(.sunday)
+            case 2: selectedDay.append(.monday)
+            case 3: selectedDay.append(.thusday)
+            case 4: selectedDay.append(.wednesday)
+            case 5: selectedDay.append(.thursday)
+            case 6: selectedDay.append(.friday)
+            case 7: selectedDay.append(.saturday)
+            default:
+                break
+            }
+        }
+    }
 }
 
 protocol CellSelectedDelegate: AnyObject {
@@ -391,6 +433,6 @@ protocol SaveScheduleDelegate: AnyObject {
 extension CreateNewTrackerViewController: SelectCategoryDelegate {
     func didSelectCategory(_ categoryTitle: String) {
         self.selectedCategory = categoryTitle
-        tableView.reloadData()
+        tableView.reloadRows(at: [IndexPath(row: 0, section: 1)], with: .automatic)
     }
 }
