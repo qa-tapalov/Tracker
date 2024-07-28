@@ -200,7 +200,7 @@ final class CreateNewTrackerViewController: UIViewController {
     @objc func textFieldChanged() {
         let cell = tableView.cellForRow(at: IndexPath(row: 0, section: 0)) as? TextFieldTableViewCell
         guard let text = cell?.textField.text else {return}
-        if text.count >= 1 {
+        if text.count >= 3 {
             updateDoneButtonState()
         }
         if isEditTracker {

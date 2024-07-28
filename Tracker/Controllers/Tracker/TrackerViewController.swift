@@ -81,6 +81,7 @@ final class TrackerViewController: UIViewController {
         view.font = UIFont.systemFont(ofSize: 17, weight: .medium)
         view.translatesAutoresizingMaskIntoConstraints = false
         view.delegate = self
+        view.addTarget(self, action: #selector(textFieldChanged), for: .editingChanged)
         return view
     }()
     
@@ -238,6 +239,13 @@ final class TrackerViewController: UIViewController {
         vc.delegate = self
         vc.selectedFilter = selectedFilter
         self.present(UINavigationController(rootViewController: vc), animated: true)
+    }
+    
+    @objc func textFieldChanged() {
+        guard let text = searchTextField.text else {return}
+        if text.count >= 3 || text.isEmpty {
+            filterTrackers()
+        }
     }
     
     private func filterTrackers(){
@@ -539,7 +547,6 @@ extension TrackerViewController: UITextFieldDelegate {
     
     func textFieldShouldReturn(_ textField: UITextField) -> Bool {
         textField.resignFirstResponder()
-        filterTrackers()
         return true
     }
     
@@ -560,11 +567,43 @@ extension TrackerViewController: SelectFilterDelegate {
         switch filter {
             
         case .all:
-            filterTrackers()
+            let filterWeekday = Calendar.current.component(.weekday, from: datePicker.date)
+            filteredCategories = categories.compactMap { category in
+                let trackers = category.trackers.filter { tracker in
+                    let dateCondition = tracker.schedule.contains { weekDay in
+                        weekDay == filterWeekday
+                    } || tracker.schedule.isEmpty
+                    
+                    return dateCondition
+                }
+                
+                if trackers.isEmpty {
+                    return nil
+                }
+                
+                return TrackerCategory(title: category.title,
+                                       trackers: trackers)
+            }
             
         case .forToday:
             datePicker.date = Date()
-            filterTrackers()
+            let filterWeekday = Calendar.current.component(.weekday, from: datePicker.date)
+            filteredCategories = categories.compactMap { category in
+                let trackers = category.trackers.filter { tracker in
+                    let dateCondition = tracker.schedule.contains { weekDay in
+                        weekDay == filterWeekday
+                    } || tracker.schedule.isEmpty
+                    
+                    return dateCondition
+                }
+                
+                if trackers.isEmpty {
+                    return nil
+                }
+                
+                return TrackerCategory(title: category.title,
+                                       trackers: trackers)
+            }
             
         case .completed:
             filteredCategories = categories.map { category in
